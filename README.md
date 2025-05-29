@@ -14,7 +14,7 @@ A modern web application for barter trading built with Node.js, Express, and Mon
 1. Clone the repository:
 
 ```bash
-git clone <your-repository-url>
+git clone git@github.com:tran-haison/Trade-System.git
 cd TradeSystem
 ```
 

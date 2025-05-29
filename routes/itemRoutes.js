@@ -63,17 +63,20 @@ router.get('/my/available', ensureAuthenticated, async (req, res) => {
 // Create item
 router.post('/', ensureAuthenticated, upload.array('images', 5), async (req, res) => {
     try {
-        const item = await itemController.createItem(req, res);
+        const result = await itemController.createItem(req, res);
 
-        // Create activity for new item
-        await Activity.create({
-            user: req.user._id,
-            type: 'ITEM_ADDED',
-            description: `Added new item: ${item.title}`,
-            relatedItem: item._id
-        });
+        // Only create activity if item was created successfully
+        if (result && result.data) {
+            await Activity.create({
+                user: req.user._id,
+                type: 'ITEM_ADDED',
+                description: `Added new item: ${result.data.title}`,
+                relatedItem: result.data._id
+            });
+        }
 
-        res.redirect('/items');
+        // The controller will handle the response
+        return;
     } catch (error) {
         console.error('Error creating item:', error);
         res.status(500).render('error', {

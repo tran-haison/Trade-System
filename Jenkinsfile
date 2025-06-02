@@ -45,8 +45,12 @@ pipeline {
         stage('Start MongoDB') {
             steps {
                 script {
-                    // Start MongoDB container
+                    // Stop and remove existing MongoDB container if it exists
                     sh '''
+                        docker stop mongodb || true
+                        docker rm mongodb || true
+                        
+                        # Start MongoDB container
                         docker run -d --name mongodb \
                             -p 27017:27017 \
                             -v mongodb_data:/data/db \

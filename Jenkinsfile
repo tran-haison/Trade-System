@@ -7,17 +7,8 @@ pipeline {
         SONAR_TOKEN = credentials('sonar-token')
         EMAIL_RECIPIENTS = 'dev.sonth2501@gmail.com'
         NEW_RELIC_LICENSE_KEY = credentials('newrelic-license-key')
-        NEW_RELIC_APP_NAME = 'barter-trading'
-        
-        // Database credentials
-        POSTGRES_USER = credentials('postgres-user')
-        POSTGRES_PASSWORD = credentials('postgres-password')
-        POSTGRES_DB = credentials('postgres-db')
-        
-        // Application environment variables
-        MONGODB_URI = 'mongodb://localhost:27017/barter-trading'
+        NEW_RELIC_APP_NAME = 'barter-trading'        
         SESSION_SECRET = credentials('session-secret')
-        NODE_ENV = 'development'
     }
     
     stages {
@@ -27,49 +18,44 @@ pipeline {
                     // Create .env file from credentials
                     sh '''
                         cat > .env << EOL
-                        # Database Configuration
-                        POSTGRES_USER=${POSTGRES_USER}
-                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-                        POSTGRES_DB=${POSTGRES_DB}
-                        
                         # Application Configuration
-                        MONGODB_URI=${MONGODB_URI}
+                        MONGODB_URI=mongodb://mongodb:27017/barter-trading
                         SESSION_SECRET=${SESSION_SECRET}
-                        NODE_ENV=${NODE_ENV}
+                        NODE_ENV=development
                         EOL
                     '''
                 }
             }
         }
         
-        stage('Start MongoDB') {
-            steps {
-                script {
-                    // Stop and remove existing MongoDB container if it exists
-                    sh '''
-                        docker stop mongodb || true
-                        docker rm mongodb || true
+        // stage('Start MongoDB') {
+        //     steps {
+        //         script {
+        //             // Stop and remove existing MongoDB container if it exists
+        //             sh '''
+        //                 docker stop mongodb || true
+        //                 docker rm mongodb || true
                         
-                        # Start MongoDB container
-                        docker run -d --name mongodb \
-                            -p 27017:27017 \
-                            -v mongodb_data:/data/db \
-                            mongo:8.0.6
+        //                 # Start MongoDB container
+        //                 docker run -d --name mongodb \
+        //                     -p 27017:27017 \
+        //                     -v mongodb_data:/data/db \
+        //                     mongo:8.0.6
                         
-                        # Wait for MongoDB to be ready
-                        echo "Waiting for MongoDB to start..."
-                        sleep 10
+        //                 # Wait for MongoDB to be ready
+        //                 echo "Waiting for MongoDB to start..."
+        //                 sleep 10
                         
-                        # Check if MongoDB is running
-                        if ! docker exec mongodb mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
-                            echo "MongoDB failed to start"
-                            exit 1
-                        fi
-                        echo "MongoDB is running"
-                    '''
-                }
-            }
-        }
+        //                 # Check if MongoDB is running
+        //                 if ! docker exec mongodb mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
+        //                     echo "MongoDB failed to start"
+        //                     exit 1
+        //                 fi
+        //                 echo "MongoDB is running"
+        //             '''
+        //         }
+        //     }
+        // }
         
         stage('Build') {
             steps {
@@ -85,34 +71,33 @@ pipeline {
             }
         }
         
-        // stage('Test') {
-        //     steps {
-        //         script {
-        //             // Install dependencies
-        //             sh 'npm install'
+        stage('Test') {
+            steps {
+                script {
+                    // Install dependencies
+                    sh 'npm install'
                     
-        //             // Start the development server in the background
-        //             sh 'npm run dev &'
+                    // Start the development server in the background
+                    sh 'npm run dev &'
                     
-        //             // Wait for the server to be ready
-        //             sh 'sleep 15'
+                    // Wait for the server to be ready
+                    sh 'sleep 15'
                     
-        //             sh 'npm run test:unit'
-        //             sh 'npm run test:integration'
-        //             sh 'npm run test:e2e'
-        //         }
-        //     }
-        // }
+                    sh 'npm run test:unit'
+                    sh 'npm run test:integration'
+                    sh 'npm run test:e2e'
+                }
+            }
+        }
         
         stage('Code Quality') {
             steps {
                 script {
                     // Run SonarQube analysis
-                    withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            sonar-scanner
-                        '''
-                    }
+                    sh '''
+                        sonar-scanner \
+                            -Dsonar.login=${SONAR_TOKEN}
+                    '''
                 }
             }
         }
@@ -171,10 +156,10 @@ pipeline {
     post {
         always {
             // Clean up containers and workspace
-            script {
-                sh 'docker stop mongodb || true'
-                sh 'docker rm mongodb || true'
-            }
+            // script {
+            //     sh 'docker stop mongodb || true'
+            //     sh 'docker rm mongodb || true'
+            // }
             cleanWs()
         }
         

@@ -27,7 +27,7 @@ services:
 
   mongodb:
     image: mongo:latest
-    container_name: mongodb-staging
+    container_name: mongodb
     restart: unless-stopped
     environment:
       - MONGO_INITDB_DATABASE=barter_trading_staging

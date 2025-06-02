@@ -8,9 +8,40 @@ pipeline {
         EMAIL_RECIPIENTS = 'dev.sonth2501@gmail.com'
         NEW_RELIC_LICENSE_KEY = credentials('newrelic-license-key')
         NEW_RELIC_APP_NAME = 'barter-trading'
+        
+        // Database credentials
+        POSTGRES_USER = credentials('postgres-user')
+        POSTGRES_PASSWORD = credentials('postgres-password')
+        POSTGRES_DB = credentials('postgres-db')
+        
+        // Application environment variables
+        MONGODB_URI = 'mongodb://mongodb:27017/barter-trading'
+        SESSION_SECRET = credentials('session-secret')
+        NODE_ENV = 'development'
     }
     
     stages {
+        stage('Setup Environment') {
+            steps {
+                script {
+                    // Create .env file from credentials
+                    sh '''
+                        cat > .env << EOL
+                        # Database Configuration
+                        POSTGRES_USER=${POSTGRES_USER}
+                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+                        POSTGRES_DB=${POSTGRES_DB}
+                        
+                        # Application Configuration
+                        MONGODB_URI=${MONGODB_URI}
+                        SESSION_SECRET=${SESSION_SECRET}
+                        NODE_ENV=${NODE_ENV}
+                        EOL
+                    '''
+                }
+            }
+        }
+        
         stage('Build') {
             steps {
                 script {

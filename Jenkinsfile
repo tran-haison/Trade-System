@@ -90,7 +90,7 @@ pipeline {
                         }
                     } finally {
                         // Kill the development server
-                        sh 'pkill -f "node.*dev" || true'
+                        // sh 'pkill -f "node.*dev" || true'
                     }
                 }
             }

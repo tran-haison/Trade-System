@@ -67,29 +67,35 @@ pipeline {
                     
                     // Wait for the server to be ready
                     sh 'sleep 15'
+
+                    sh 'npm run test:unit'
+
+                    sh 'npm run test:integration'
                     
-                    try {
-                        parallel {
-                            stage('Unit Tests') {
-                                steps {
-                                    sh 'npm run test:unit'
-                                }
-                            }
-                            stage('Integration Tests') {
-                                steps {
-                                    sh 'npm run test:integration'
-                                }
-                            }
-                            stage('E2E Tests') {
-                                steps {
-                                    sh 'npm run test:e2e'
-                                }
-                            }
-                        }
-                    } finally {
-                        // Kill the development server
-                        sh 'pkill -f "node.*dev" || true'
-                    }
+                    sh 'npm run test:e2e'
+                    
+                    // try {
+                    //     parallel {
+                    //         stage('Unit Tests') {
+                    //             steps {
+                    //                 sh 'npm run test:unit'
+                    //             }
+                    //         }
+                    //         stage('Integration Tests') {
+                    //             steps {
+                    //                 sh 'npm run test:integration'
+                    //             }
+                    //         }
+                    //         stage('E2E Tests') {
+                    //             steps {
+                    //                 sh 'npm run test:e2e'
+                    //             }
+                    //         }
+                    //     }
+                    // } finally {
+                    //     // Kill the development server
+                    //     sh 'pkill -f "node.*dev" || true'
+                    // }
                 }
             }
         }

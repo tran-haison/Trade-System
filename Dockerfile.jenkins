@@ -46,11 +46,11 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor
     && apt-get install -y mongodb-mongosh \
     && rm -rf /var/lib/apt/lists/*
 
-# Install SonarQube Scanner
-RUN wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip \
-    && unzip sonar-scanner-cli-4.8.0.2856-linux.zip \
-    && mv sonar-scanner-4.8.0.2856-linux /opt/sonar-scanner \
-    && rm sonar-scanner-cli-4.8.0.2856-linux.zip
+# Install SonarQube Scanner for Linux ARM64
+RUN wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.1.0.4889-linux-aarch64.zip \
+    && unzip sonar-scanner-cli-7.1.0.4889-linux-aarch64.zip \
+    && mv sonar-scanner-7.1.0.4889-linux-aarch64 /opt/sonar-scanner \
+    && rm sonar-scanner-cli-7.1.0.4889-linux-aarch64.zip
 
 # Configure SonarQube Scanner
 ENV SONAR_RUNNER_HOME=/opt/sonar-scanner

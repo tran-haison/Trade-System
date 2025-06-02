@@ -9,6 +9,7 @@ pipeline {
         NEW_RELIC_LICENSE_KEY = credentials('newrelic-license-key')
         NEW_RELIC_APP_NAME = 'barter-trading'        
         SESSION_SECRET = credentials('session-secret')
+        SNYK_TOKEN = credentials('snyk-token')
     }
     
     stages {
@@ -73,7 +74,7 @@ pipeline {
                     // Run SonarQube analysis
                     sh '''
                         sonar-scanner \
-                            -Dsonar.login=${SONAR_TOKEN}
+                            -Dsonar.token=${SONAR_TOKEN}
                     '''
                 }
             }
@@ -86,7 +87,7 @@ pipeline {
                     sh 'npm audit'
                     
                     // Run Snyk security scan
-                    sh 'snyk test'
+                    sh 'snyk test --token=${SNYK_TOKEN}'
                 }
             }
         }

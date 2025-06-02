@@ -28,35 +28,6 @@ pipeline {
             }
         }
         
-        // stage('Start MongoDB') {
-        //     steps {
-        //         script {
-        //             // Stop and remove existing MongoDB container if it exists
-        //             sh '''
-        //                 docker stop mongodb || true
-        //                 docker rm mongodb || true
-                        
-        //                 # Start MongoDB container
-        //                 docker run -d --name mongodb \
-        //                     -p 27017:27017 \
-        //                     -v mongodb_data:/data/db \
-        //                     mongo:8.0.6
-                        
-        //                 # Wait for MongoDB to be ready
-        //                 echo "Waiting for MongoDB to start..."
-        //                 sleep 10
-                        
-        //                 # Check if MongoDB is running
-        //                 if ! docker exec mongodb mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
-        //                     echo "MongoDB failed to start"
-        //                     exit 1
-        //                 fi
-        //                 echo "MongoDB is running"
-        //             '''
-        //         }
-        //     }
-        // }
-        
         stage('Build') {
             steps {
                 script {
@@ -85,7 +56,13 @@ pipeline {
                     
                     sh 'npm run test:unit'
                     sh 'npm run test:integration'
-                    sh 'npm run test:e2e'
+                    
+                    // Start Xvfb and run Cypress tests
+                    sh '''
+                        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+                        export DISPLAY=:99
+                        npm run test:e2e
+                    '''
                 }
             }
         }

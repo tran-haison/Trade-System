@@ -12,6 +12,17 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     unzip \
     wget \
+    xvfb \
+    libgtk2.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    libnotify-dev \
+    libgconf-2-4 \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libxtst6 \
+    xauth \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Docker
@@ -54,3 +65,4 @@ USER jenkins
 
 # Set environment variables
 ENV NODE_ENV=development
+ENV DISPLAY=:99

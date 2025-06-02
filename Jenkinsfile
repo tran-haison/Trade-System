@@ -15,7 +15,7 @@ pipeline {
         POSTGRES_DB = credentials('postgres-db')
         
         // Application environment variables
-        MONGODB_URI = 'mongodb://mongodb:27017/barter-trading'
+        MONGODB_URI = 'mongodb://localhost:27017/barter-trading'
         SESSION_SECRET = credentials('session-secret')
         NODE_ENV = 'development'
     }
@@ -37,6 +37,31 @@ pipeline {
                         SESSION_SECRET=${SESSION_SECRET}
                         NODE_ENV=${NODE_ENV}
                         EOL
+                    '''
+                }
+            }
+        }
+        
+        stage('Start MongoDB') {
+            steps {
+                script {
+                    // Start MongoDB container
+                    sh '''
+                        docker run -d --name mongodb \
+                            -p 27017:27017 \
+                            -v mongodb_data:/data/db \
+                            mongo:latest
+                        
+                        # Wait for MongoDB to be ready
+                        echo "Waiting for MongoDB to start..."
+                        sleep 10
+                        
+                        # Check if MongoDB is running
+                        if ! docker exec mongodb mongosh --eval "db.adminCommand('ping')" > /dev/null 2>&1; then
+                            echo "MongoDB failed to start"
+                            exit 1
+                        fi
+                        echo "MongoDB is running"
                     '''
                 }
             }
@@ -67,35 +92,10 @@ pipeline {
                     
                     // Wait for the server to be ready
                     sh 'sleep 15'
-
+                    
                     sh 'npm run test:unit'
-
                     sh 'npm run test:integration'
-                    
                     sh 'npm run test:e2e'
-                    
-                    // try {
-                    //     parallel {
-                    //         stage('Unit Tests') {
-                    //             steps {
-                    //                 sh 'npm run test:unit'
-                    //             }
-                    //         }
-                    //         stage('Integration Tests') {
-                    //             steps {
-                    //                 sh 'npm run test:integration'
-                    //             }
-                    //         }
-                    //         stage('E2E Tests') {
-                    //             steps {
-                    //                 sh 'npm run test:e2e'
-                    //             }
-                    //         }
-                    //     }
-                    // } finally {
-                    //     // Kill the development server
-                    //     sh 'pkill -f "node.*dev" || true'
-                    // }
                 }
             }
         }
@@ -166,7 +166,11 @@ pipeline {
     
     post {
         always {
-            // Clean up workspace
+            // Clean up containers and workspace
+            script {
+                sh 'docker stop mongodb || true'
+                sh 'docker rm mongodb || true'
+            }
             cleanWs()
         }
         

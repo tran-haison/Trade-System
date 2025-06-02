@@ -46,6 +46,16 @@ RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor
     && apt-get install -y mongodb-mongosh \
     && rm -rf /var/lib/apt/lists/*
 
+# Install SonarQube Scanner
+RUN wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip \
+    && unzip sonar-scanner-cli-4.8.0.2856-linux.zip \
+    && mv sonar-scanner-4.8.0.2856-linux /opt/sonar-scanner \
+    && rm sonar-scanner-cli-4.8.0.2856-linux.zip
+
+# Configure SonarQube Scanner
+ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
+ENV PATH="/opt/sonar-scanner/bin:${PATH}"
+
 # Install Snyk
 RUN npm install -g snyk
 
@@ -55,7 +65,8 @@ RUN usermod -aG docker jenkins
 # Create necessary directories
 RUN mkdir -p /var/jenkins_home/.npm \
     && mkdir -p /var/jenkins_home/.snyk \
-    && mkdir -p /var/jenkins_home/.mongodb
+    && mkdir -p /var/jenkins_home/.mongodb \
+    && mkdir -p /var/jenkins_home/.sonar
 
 # Set proper permissions
 RUN chown -R jenkins:jenkins /var/jenkins_home

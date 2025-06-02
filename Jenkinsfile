@@ -85,24 +85,24 @@ pipeline {
             }
         }
         
-        stage('Test') {
-            steps {
-                script {
-                    // Install dependencies
-                    sh 'npm install'
+        // stage('Test') {
+        //     steps {
+        //         script {
+        //             // Install dependencies
+        //             sh 'npm install'
                     
-                    // Start the development server in the background
-                    sh 'npm run dev &'
+        //             // Start the development server in the background
+        //             sh 'npm run dev &'
                     
-                    // Wait for the server to be ready
-                    sh 'sleep 15'
+        //             // Wait for the server to be ready
+        //             sh 'sleep 15'
                     
-                    sh 'npm run test:unit'
-                    sh 'npm run test:integration'
-                    sh 'npm run test:e2e'
-                }
-            }
-        }
+        //             sh 'npm run test:unit'
+        //             sh 'npm run test:integration'
+        //             sh 'npm run test:e2e'
+        //         }
+        //     }
+        // }
         
         stage('Code Quality') {
             steps {

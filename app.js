@@ -30,8 +30,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 // Create uploads directory if it doesn't exist
-const uploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
-require('fs').mkdirSync(uploadDir, { recursive: true });
+const profileUploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
+const itemUploadDir = path.join(__dirname, 'public', 'uploads', 'items');
+require('fs').mkdirSync(profileUploadDir, { recursive: true });
+require('fs').mkdirSync(itemUploadDir, { recursive: true });
 
 // View engine setup
 app.set('view engine', 'ejs');

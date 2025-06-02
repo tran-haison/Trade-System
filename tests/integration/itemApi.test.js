@@ -22,7 +22,7 @@ describe('Item API', () => {
         if (mongoose.connection.readyState !== 0) {
             await mongoose.disconnect();
         }
-        await mongoose.connect(mongoServer.getUri(), { useNewUrlParser: true, useUnifiedTopology: true });
+        await mongoose.connect(mongoServer.getUri());
         app = express();
         app.use(express.json());
         app.use(express.urlencoded({ extended: false }));

@@ -104,20 +104,20 @@ pipeline {
             }
         }
         
-        stage('Release to Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                script {
-                    // Deploy to production
-                    sh '''
-                        docker-compose -f docker-compose.prod.yml down
-                        docker-compose -f docker-compose.prod.yml up -d
-                    '''
-                }
-            }
-        }
+        // stage('Release to Production') {
+        //     when {
+        //         branch 'main'
+        //     }
+        //     steps {
+        //         script {
+        //             // Deploy to production
+        //             sh '''
+        //                 docker-compose -f docker-compose.prod.yml down
+        //                 docker-compose -f docker-compose.prod.yml up -d
+        //             '''
+        //         }
+        //     }
+        // }
         
         stage('Monitoring') {
             steps {
@@ -134,10 +134,6 @@ pipeline {
     post {
         always {
             // Clean up containers and workspace
-            // script {
-            //     sh 'docker stop mongodb || true'
-            //     sh 'docker rm mongodb || true'
-            // }
             cleanWs()
         }
         

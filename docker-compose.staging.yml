@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=staging
-      - MONGODB_URI=mongodb://mongodb:27017/barter_trading_staging
+      - MONGODB_URI=mongodb://mongodb:27018/barter_trading_staging
       - PORT=3000
     ports:
       - "3000:3000"
@@ -32,11 +32,11 @@ services:
     volumes:
       - mongodb_staging_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - app-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27018/test --quiet
       interval: 30s
       timeout: 10s
       retries: 3

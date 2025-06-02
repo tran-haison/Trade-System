@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Items | Barter Trading System</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .dashboard-cards {
+            display: flex;
+            gap: 16px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-card {
+            flex: 1 1 200px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1.5px solid #ececec;
+            box-shadow: none;
+            padding: 22px 28px 18px 28px;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            min-height: 110px;
+            justify-content: flex-start;
+        }
+
+        .dashboard-card .top-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dashboard-card .icon {
+            font-size: 1rem;
+            color: #059669;
+            margin-top: 4px;
+            padding: 0;
+        }
+
+        .dashboard-card .label {
+            font-size: 1rem;
+            color: #6b7280;
+            font-weight: 300;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-card .main-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .dashboard-card .main {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+
+        .dashboard-card .sub {
+            font-size: 1rem;
+            color: #7e7e7e;
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
+        .manage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+
+        .manage-header h4 {
+            font-weight: 700;
+            margin: 0;
+            color: #1e293b;
+        }
+
+        .manage-header .btn {
+            background: #059669;
+            border-radius: 8px;
+            box-shadow: none;
+            text-transform: none;
+            font-weight: 500;
+            letter-spacing: 0;
+        }
+
+        .manage-header .btn i {
+            margin-right: 6px;
+        }
+
+        .search-filter-row {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-tab {
+            padding: 12px 20px;
+            border-radius: 6px;
+            background: #f3f4f6;
+            color: #7e7e7e;
+            font-weight: 400;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: background 0.15s;
+        }
+
+        .filter-tab.active,
+        .filter-tab:hover {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-top: 12px;
+        }
+
+        .item-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1.5px solid #ececec;
+            box-shadow: none;
+            overflow: hidden;
+            transition: box-shadow 0.18s, border-color 0.18s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 270px;
+            background: #fff;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            overflow: hidden;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            font-size: 0.92rem;
+            font-weight: 400;
+            border-radius: 999px;
+            padding: 4px 14px;
+            z-index: 2;
+            text-transform: lowercase;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+
+        .status-badge.available {
+            background: #d1fae5 !important;
+            color: #059669 !important;
+        }
+
+        .status-badge.pending {
+            background: #fef9c3 !important;
+            color: #cf9d0a !important;
+        }
+
+        .status-badge.traded {
+            background: #e5e7eb !important;
+            color: #374151 !important;
+        }
+
+        .card-actions-top {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .card-actions-top .icon-btn {
+            background: #fff;
+            border: 1px solid #ececec;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            padding: 4px 6px;
+            color: #64748b;
+            font-size: 1.1rem;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .card-content {
+            padding: 18px 18px 12px 18px;
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .card-title {
+            font-size: 1.13rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 2px;
+            line-height: 1.3;
+        }
+
+        .card-location {
+            font-size: 0.98rem;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 18px;
+            font-size: 0.97rem;
+            color: #7e7e7e;
+            margin-top: 6px;
+            justify-content: space-between;
+        }
+
+        .card-meta i {
+            font-size: 1em;
+            vertical-align: middle;
+            margin-right: 2px;
+        }
+
+        @media (max-width: 800px) {
+            .dashboard-cards {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .items-grid {
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-card {
+                padding: 16px 10px;
+            }
+
+            .manage-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .search-filter-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            background: #fff;
+            border: 1.5px solid #ececec;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            transition: border-color 0.18s;
+        }
+
+        .search-box:focus-within {
+            border-color: #059669;
+        }
+
+        .search-box .material-icons {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #cbd5e1;
+            font-size: 1.3rem;
+            pointer-events: none;
+        }
+
+        .search-box textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+            color: #374151;
+            padding: 12px 12px 12px 38px;
+            border-radius: 10px;
+            min-height: 44px;
+            max-height: 44px;
+            resize: none;
+        }
+
+        .search-box textarea::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+            opacity: 1;
+        }
+
+        .search-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/navbar') %>
+        <main class="container" style="max-width: 1200px; padding: 0;">
+            <div class="manage-header">
+                <div>
+                    <h2 class="section-title" style="text-align:left; margin-bottom: 10px;">My Items</h2>
+                    <p class="section-subtitle" style="text-align:left;">Manage and track all your listed items</p>
+                </div>
+                <a href="/items/create" class="btn waves-effect waves-light">
+                    <i class="material-icons left">add</i>
+                    List New Item
+                </a>
+            </div>
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="top-row">
+                        <span class="icon"><i class="material-icons">inventory_2</i></span>
+                        <span class="label">Active Listings</span>
+                    </div>
+                    <div class="main-row">
+                        <span class="main">
+                            <%= activeListings %>
+                        </span>
+                        <span class="sub">+2 this week</span>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="top-row">
+                        <span class="icon"><i class="material-icons">visibility</i></span>
+                        <span class="label">Total Views</span>
+                    </div>
+                    <div class="main-row">
+                        <span class="main">
+                            <%= totalViews.toLocaleString() %>
+                        </span>
+                        <span class="sub">+15% vs last week</span>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="top-row">
+                        <span class="icon"><i class="material-icons">swap_horiz</i></span>
+                        <span class="label">Trade Requests</span>
+                    </div>
+                    <div class="main-row">
+                        <span class="main">
+                            <%= tradeRequests %>
+                        </span>
+                        <span class="sub">5 new</span>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="top-row">
+                        <span class="icon"><i class="material-icons">star</i></span>
+                        <span class="label">Completed Trades</span>
+                    </div>
+                    <div class="main-row">
+                        <span class="main">
+                            <%= completedTrades %>
+                        </span>
+                        <span class="sub">2 this month</span>
+                    </div>
+                </div>
+            </div>
+            <form method="GET" action="/items/manage" class="search-filter-row">
+                <div class="search-bar-row">
+                    <div class="search-box">
+                        <i class="material-icons">search</i>
+                        <textarea id="search" name="search" placeholder="Search item..."><%= search %></textarea>
+                    </div>
+                    <button type="submit" class="btn waves-effect waves-light" title="Search">
+                        <i class="material-icons">search</i>
+                    </button>
+                </div>
+                <div class="filter-tabs">
+                    <button type="submit" name="status" value="all"
+                        class="filter-tab <%= status === 'all' ? 'active' : '' %>">All Items</button>
+                    <button type="submit" name="status" value="Available"
+                        class="filter-tab <%= status === 'Available' ? 'active' : '' %>">Available</button>
+                    <button type="submit" name="status" value="Pending"
+                        class="filter-tab <%= status === 'Pending' ? 'active' : '' %>">Pending</button>
+                    <button type="submit" name="status" value="Traded"
+                        class="filter-tab <%= status === 'Traded' ? 'active' : '' %>">Traded</button>
+                </div>
+            </form>
+            <div class="items-grid" style="margin: 40px 0;">
+                <% if (items.length===0) { %>
+                    <div
+                        style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px 0; font-size: 1.15rem;">
+                        No items found.</div>
+                    <% } %>
+                        <% items.forEach(item=> { %>
+                            <div class="item-card">
+                                <div class="card-image-wrapper">
+                                    <span class="status-badge <%= item.status.toLowerCase() %>">
+                                        <%= item.status %>
+                                    </span>
+                                    <div class="card-actions-top">
+                                        <a href="/items/<%= item._id %>/edit" class="icon-btn" title="Edit"
+                                            style="padding: 4px 6px 0 6px;margin: 0;">
+                                            <i class="material-icons">edit</i>
+                                        </a>
+                                        <form id="delete-form-<%= item._id %>"
+                                            action="/items/<%= item._id %>?_method=DELETE" method="POST"
+                                            style="display:inline;">
+                                            <button type="button" class="icon-btn delete-btn" title="Delete"
+                                                style="color: rgb(241, 77, 77);cursor: pointer;"
+                                                data-form-id="<%= item._id %>">
+                                                <i class="material-icons">delete</i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <img class="card-img" src="/uploads/items/<%= item.images[0] %>"
+                                        alt="<%= item.title %>">
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-title">
+                                        <%= item.title %>
+                                    </div>
+                                    <div class="card-location">
+                                        <%= item.location %>
+                                    </div>
+                                    <div class="card-meta">
+                                        <span><i class="material-icons">visibility</i>
+                                            <%= Math.floor(Math.random()*300+50) %> views
+                                        </span>
+                                        <span><i class="material-icons">mail_outline</i>
+                                            <%= Math.floor(Math.random()*10) %> requests
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+            </div>
+        </main>
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="modal"
+            style="display:none; position:fixed; z-index:9999; left:0; top:0; right:0; bottom:0; width:100vw; height:100%; min-height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
+            <div
+                style="background:#fff; border-radius:10px; padding:32px 28px; max-width:350px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.18); text-align:center; position:relative;">
+                <h5 style="margin-bottom:18px;">Delete item?</h5>
+                <p style="color:#64748b; margin-bottom:28px;">
+                    Are you sure you want to delete this item? This action cannot be undone.
+                </p>
+                <div style="display:flex; gap:12px; justify-content:center;">
+                    <button id="cancelDeleteBtn" class="btn"
+                        style="color:#64748b; background:#f3f4f6; border-radius:6px;">Cancel</button>
+                    <button id="confirmDeleteBtn" class="btn-flat"
+                        style="background:#ef4444; color:#fff; border-radius:6px;">Delete</button>
+                </div>
+            </div>
+        </div>
+        <%- include('../partials/footer') %>
+            <!-- Materialize JS -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            <!-- Custom JS -->
+            <script src="/js/main.js"></script>
+
+            <script>
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const formId = this.getAttribute('data-form-id');
+                        document.getElementById('deleteModal').style.display = 'flex';
+                        document.getElementById('confirmDeleteBtn').setAttribute('data-form-id', formId);
+                    });
+                });
+                document.getElementById('cancelDeleteBtn').onclick = function () {
+                    document.getElementById('deleteModal').style.display = 'none';
+                };
+                document.getElementById('confirmDeleteBtn').onclick = function () {
+                    const formId = this.getAttribute('data-form-id');
+                    document.getElementById('deleteModal').style.display = 'none';
+                    document.getElementById('delete-form-' + formId).submit();
+                };
+                window.onclick = function (event) {
+                    const modal = document.getElementById('deleteModal');
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                };
+            </script>
+</body>
+
+</html>

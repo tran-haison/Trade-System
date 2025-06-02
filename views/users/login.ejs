@@ -17,80 +17,114 @@
     <!-- Navigation -->
     <%- include('../partials/navbar') %>
 
-    <!-- Flash Messages -->
-    <%- include('../partials/messages') %>
-    
-    <main style="padding: 0;">
-        <!-- Sign in Section -->
-        <section id="sign-in" style="padding: 40px 0; display: flex; justify-content: center; align-items: center;">
-            <div style="max-width: 480px; width: 100%; padding: 40px;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 8px;">Sign in to your account</h2>
-                    <p style="color: #666; margin-bottom: 32px;">Welcome back</p>
-                </div>
+        <!-- Flash Messages -->
+        <%- include('../partials/messages') %>
 
-                <form action="/users/login" method="POST" style="display: flex; flex-direction: column; gap: 24px;">
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="display: flex; gap: 4px; font-weight: 500;">
-                            Email address
-                            <span style="color: #dc3545;">*</span>
-                        </label>
-                        <input type="email" name="email" placeholder="your@email.com" required
-                            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
-                    </div>
+            <main style="padding: 0;">
+                <!-- Sign in Section -->
+                <section id="sign-in"
+                    style="padding: 40px 0; display: flex; justify-content: center; align-items: center;">
+                    <div style="max-width: 480px; width: 100%; padding: 40px;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 8px;">Sign in to your account
+                            </h2>
+                            <p style="color: #666; margin-bottom: 32px;">Welcome back</p>
+                        </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="display: flex; gap: 4px; font-weight: 500;">
-                            Password
-                            <span style="color: #dc3545;">*</span>
-                        </label>
-                        <input type="password" name="password" placeholder="••••••••" required
-                            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
-                    </div>
+                        <form action="/users/login" method="POST"
+                            style="display: flex; flex-direction: column; gap: 24px;">
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; gap: 4px; font-weight: 500;">
+                                    Email address
+                                    <span style="color: #dc3545;">*</span>
+                                </label>
+                                <input type="email" name="email" placeholder="your@email.com" required
+                                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                            </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" name="remember" style="width: 16px; height: 16px; cursor: pointer;" />
-                            Remember me
-                        </label>
-                        <a href="#" style="color: #4CAF50; text-decoration: none; font-weight: 500;">Forgot password?</a>
-                    </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; gap: 4px; font-weight: 500;">
+                                    Password
+                                    <span style="color: #dc3545;">*</span>
+                                </label>
+                                <div style="position: relative;">
+                                    <input type="password" name="password" id="password" placeholder="••••••••" required
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                                    <i class="material-icons"
+                                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666;"
+                                        onclick="togglePassword('password')">visibility_off</i>
+                                </div>
+                            </div>
 
-                    <button type="submit" style="width: 100%; background-color: #4CAF50; color: white; padding: 12px; 
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" name="remember"
+                                        style="width: 16px; height: 16px; cursor: pointer;" />
+                                    Remember me
+                                </label>
+                                <a href="/users/forgot-password"
+                                    style="color: #4CAF50; text-decoration: none; font-weight: 500;">Forgot
+                                    Password?</a>
+                            </div>
+
+                            <button type="submit" style="width: 100%; background-color: #4CAF50; color: white; padding: 12px; 
                         border: none; border-radius: 6px; font-size: 16px; font-weight: 500; 
                         cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="margin-right: 4px;">
-                            <path d="M12 15V3m0 12l-4-4m4 4l4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M8 21H16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        Sign in
-                    </button>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    style="margin-right: 4px;">
+                                    <path d="M12 15V3m0 12l-4-4m4 4l4-4" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path d="M8 21H16" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                Sign in
+                            </button>
 
-                    <div style="text-align: center; margin-top: 16px;">
-                        <div style="color: #666; margin-bottom: 16px;">Don't have an account?</div>
-                        <a href="/users/register" style="width: 100%; background-color: white; color: #333; padding: 12px; 
+                            <div style="text-align: center; margin-top: 16px;">
+                                <div style="color: #666; margin-bottom: 16px;">Don't have an account?</div>
+                                <a href="/users/register"
+                                    style="width: 100%; background-color: white; color: #333; padding: 12px; 
                             border: 1px solid #ddd; border-radius: 6px; font-size: 16px; font-weight: 500; 
                             cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="margin-right: 8px;">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <circle cx="9" cy="7" r="4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M19 8v6m3-3h-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            Create an account
-                        </a>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        style="margin-right: 8px;">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                        <circle cx="9" cy="7" r="4" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path d="M19 8v6m3-3h-6" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                    Create an account
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-        </section>
-    </main>
+                </section>
+            </main>
 
-    <!-- Footer -->
-    <%- include('../partials/footer') %>
+            <!-- Footer -->
+            <%- include('../partials/footer') %>
 
-    <!-- Materialize JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <!-- Custom JS -->
-    <script src="/js/main.js"></script>
+                <!-- Materialize JS -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+                <!-- Custom JS -->
+                <script src="/js/main.js"></script>
+
+                <script>
+                    function togglePassword(inputId) {
+                        const input = document.getElementById(inputId);
+                        const icon = input.nextElementSibling;
+
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.textContent = 'visibility';
+                        } else {
+                            input.type = 'password';
+                            icon.textContent = 'visibility_off';
+                        }
+                    }
+                </script>
 </body>
 
 </html>

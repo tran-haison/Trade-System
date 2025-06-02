@@ -251,6 +251,16 @@
             gap: 12px;
             padding: 16px;
         }
+
+        .star-rating {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+        }
+
+        .star-rating .material-icons {
+            font-size: 20px;
+        }
     </style>
 </head>
 
@@ -286,6 +296,20 @@
                                         <%= new Date(user.createdAt).toLocaleDateString() %>
                                     </div>
                                     <div class="stat-label">Member Since</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">
+                                        <div class="star-rating">
+                                            <% for(let i=1; i <=5; i++) { %>
+                                                <i class="material-icons"
+                                                    style="color: <%= i <= user.averageRating ? '#FFD700' : '#E0E0E0' %>">star</i>
+                                                <% } %>
+                                        </div>
+                                        <div style="font-size: 14px; margin-top: 4px;">
+                                            <%= user.averageRating.toFixed(1) %> / 5.0
+                                        </div>
+                                    </div>
+                                    <div class="stat-label">Average Rating</div>
                                 </div>
                             </div>
                         </div>
@@ -393,7 +417,8 @@
                             <div class="input-field-wrapper">
                                 <div class="input-field">
                                     <label>New Password</label>
-                                    <input type="password" name="newPassword" id="newPassword">
+                                    <input type="password" name="newPassword" id="newPassword"
+                                        oninput="validatePasswords()">
                                     <i class="material-icons password-toggle"
                                         onclick="togglePassword('newPassword')">visibility_off</i>
                                 </div>
@@ -402,16 +427,19 @@
                             <div class="input-field-wrapper">
                                 <div class="input-field">
                                     <label>Confirm New Password</label>
-                                    <input type="password" name="confirmNewPassword" id="confirmNewPassword">
+                                    <input type="password" name="confirmNewPassword" id="confirmNewPassword"
+                                        oninput="validatePasswords()">
                                     <i class="material-icons password-toggle"
                                         onclick="togglePassword('confirmNewPassword')">visibility_off</i>
                                 </div>
+                                <div id="passwordMatchMessage" class="helper-text"
+                                    style="color: #dc3545; display: none;"></div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
                                 <a href="/dashboard" class="btn-flat waves-effect">Cancel</a>
-                                <button type="submit" class="btn waves-effect waves-light green">
+                                <button type="submit" class="btn waves-effect waves-light green" id="saveButton">
                                     <i class="material-icons left">save</i>
                                     Save changes
                                 </button>
@@ -465,6 +493,37 @@
                                     });
                                 });
 
+                                function validatePasswords() {
+                                    const newPassword = document.getElementById('newPassword').value;
+                                    const confirmPassword = document.getElementById('confirmNewPassword').value;
+                                    const messageDiv = document.getElementById('passwordMatchMessage');
+                                    const saveButton = document.getElementById('saveButton');
+
+                                    // Only validate if both new password fields are filled
+                                    if (newPassword || confirmPassword) {
+                                        if (!newPassword || !confirmPassword) {
+                                            messageDiv.textContent = 'Please fill in both password fields';
+                                            messageDiv.style.display = 'block';
+                                            saveButton.disabled = true;
+                                            saveButton.classList.add('disabled');
+                                        } else if (newPassword !== confirmPassword) {
+                                            messageDiv.textContent = 'Passwords do not match';
+                                            messageDiv.style.display = 'block';
+                                            saveButton.disabled = true;
+                                            saveButton.classList.add('disabled');
+                                        } else {
+                                            messageDiv.style.display = 'none';
+                                            saveButton.disabled = false;
+                                            saveButton.classList.remove('disabled');
+                                        }
+                                    } else {
+                                        // If both password fields are empty, allow form submission
+                                        messageDiv.style.display = 'none';
+                                        saveButton.disabled = false;
+                                        saveButton.classList.remove('disabled');
+                                    }
+                                }
+
                                 function togglePassword(inputId) {
                                     const input = document.getElementById(inputId);
                                     const icon = input.nextElementSibling;
@@ -476,6 +535,94 @@
                                         input.type = 'password';
                                         icon.textContent = 'visibility_off';
                                     }
+                                }
+
+                                // Email verification functions
+                                function requestVerification() {
+                                    fetch('/users/send-verification', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        }
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.status === 'success') {
+                                                M.toast({ html: 'Verification code sent to your email!', classes: 'green' });
+                                                const modal = M.Modal.getInstance(document.getElementById('verificationModal'));
+                                                modal.open();
+                                            } else {
+                                                M.toast({ html: data.message || 'Failed to send verification code', classes: 'red' });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            M.toast({ html: 'An error occurred. Please try again.', classes: 'red' });
+                                        });
+                                }
+
+                                function verifyCode() {
+                                    const codeInputs = document.querySelectorAll('.code-input');
+                                    const code = Array.from(codeInputs).map(input => input.value).join('');
+
+                                    if (code.length !== 6) {
+                                        M.toast({ html: 'Please enter the complete verification code', classes: 'red' });
+                                        return;
+                                    }
+
+                                    fetch('/users/verify-code', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ code })
+                                    })
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error(`HTTP error! status: ${response.status}`);
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            if (data.status === 'success') {
+                                                M.toast({ html: 'Email verified successfully!', classes: 'green' });
+                                                const modal = M.Modal.getInstance(document.getElementById('verificationModal'));
+                                                modal.close();
+                                                // Reload the page to update the verification status
+                                                setTimeout(() => window.location.reload(), 1500);
+                                            } else {
+                                                M.toast({ html: data.message || 'Invalid verification code', classes: 'red' });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            M.toast({ html: 'An error occurred. Please try again.', classes: 'red' });
+                                        });
+                                }
+
+                                function resendCode() {
+                                    fetch('/users/send-verification', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        }
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.status === 'success') {
+                                                M.toast({ html: 'New verification code sent!', classes: 'green' });
+                                                // Clear the input fields
+                                                document.querySelectorAll('.code-input').forEach(input => input.value = '');
+                                                // Focus on the first input
+                                                document.querySelector('.code-input').focus();
+                                            } else {
+                                                M.toast({ html: data.message || 'Failed to send verification code', classes: 'red' });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            M.toast({ html: 'An error occurred. Please try again.', classes: 'red' });
+                                        });
                                 }
                             </script>
 

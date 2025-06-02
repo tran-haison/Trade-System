@@ -3,43 +3,66 @@ const router = express.Router();
 const { ensureAuthenticated } = require('../middleware/auth');
 const Activity = require('../models/Activity');
 
-// Home page
-router.get('/', (req, res) => {
-    res.render('index', {
-        title: 'Home',
-        currentPage: 'home'
+// Import route modules
+const tradeRoutes = require('./tradeRoutes');
+const userRoutes = require('./userRoutes');
+const itemRoutes = require('./itemRoutes');
+const notificationRoutes = require('./notificationRoutes');
+
+// Routes
+router.use('/trades', tradeRoutes);
+router.use('/users', userRoutes);
+router.use('/items', itemRoutes);
+router.use('/notifications', notificationRoutes);
+
+// Student identity endpoint
+router.get('/api/student', (req, res) => {
+    res.json({
+        name: 'Hai Son Tran',
+        studentId: '224252426'
     });
 });
 
-// Dashboard
+// Home route
+router.get('/', (req, res) => {
+    res.render('index', {
+        title: 'Welcome to Trade System',
+        user: req.user
+    });
+});
+
+// Dashboard route
 router.get('/dashboard', ensureAuthenticated, async (req, res) => {
     try {
-        const recentActivity = await Activity.find({ user: req.user._id })
-            .sort({ timestamp: -1 })
-            .limit(10)
-            .populate('relatedItem', 'title')
-            .populate('relatedTrade', 'status');
+        const recentActivity = await Activity.find({
+            receiver: req.user._id
+        })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .populate('creator', 'firstName lastName')
+            .populate('receiver', 'firstName lastName')
+            .populate('relatedTrade', 'status')
+            .populate('relatedItem', 'title');
 
-    res.render('dashboard', {
-        title: 'Dashboard',
+        res.render('dashboard', {
+            title: 'Dashboard',
             user: req.user,
             recentActivity: recentActivity
         });
     } catch (error) {
-        console.error('Error fetching recent activity:', error);
-        res.status(500).render('error', {
-            title: 'Error',
-            msg: 'Failed to fetch recent activity',
-            error: error
-    });
+        console.error('Error fetching dashboard data:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        res.render('dashboard', {
+            title: 'Dashboard',
+            user: req.user,
+            recentActivity: []
+        });
     }
 });
-
-async function getRecentActivity(userId) {
-    // Fetch recent activities from the database
-    // This is a placeholder. Replace with actual logic to fetch activities.
-    return [];
-}
 
 // About page
 router.get('/about', (req, res) => {
@@ -72,5 +95,19 @@ router.get('/privacy', (req, res) => {
         user: req.user
     });
 });
+
+// 404 handler
+router.use((req, res) => {
+    res.status(404).render('error', {
+        title: '404 - Page Not Found',
+        message: 'The page you are looking for does not exist.'
+    });
+});
+
+async function getRecentActivity(userId) {
+    // Fetch recent activities from the database
+    // This is a placeholder. Replace with actual logic to fetch activities.
+    return [];
+}
 
 module.exports = router; 

@@ -11,7 +11,7 @@
         </div>
         <div class="modal-body">
             <form id="tradeProposalForm" action="/trades" method="POST">
-                <input type="hidden" name="requestedItem" id="requestedItemId">
+                <input type="hidden" name="requestedItems" id="requestedItemId">
                 <input type="hidden" name="receiverId" id="receiverId">
 
                 <!-- Requested Item Section -->
@@ -148,10 +148,6 @@
             .filter(id => id && objectIdPattern.test(id));
         const requestedItem = document.getElementById('requestedItemId').value;
 
-        // Debug logs
-        console.log('requestedItem:', requestedItem);
-        console.log('offeredItems:', offeredItems);
-
         if (offeredItems.length === 0) {
             M.toast({ html: 'Please select at least one valid item to offer' });
             return;
@@ -162,10 +158,14 @@
             return;
         }
 
-        // Add offered items to form data as separate fields
-        const formData = new FormData(this);
-        formData.delete('offeredItems');
-        offeredItems.forEach(id => formData.append('offeredItems', id));
+        // Create form data
+        const formData = new FormData();
+
+        // Add fields as JSON strings for arrays
+        formData.append('requestedItems', JSON.stringify([requestedItem]));
+        formData.append('offeredItems', JSON.stringify(offeredItems));
+        formData.append('receiverId', document.getElementById('receiverId').value);
+        formData.append('message', document.getElementById('message').value);
 
         // Submit form
         fetch('/trades', {
@@ -181,7 +181,7 @@
                         try {
                             // Try to parse as JSON
                             const data = JSON.parse(text);
-                            throw new Error(data.message || 'Error sending trade proposal');
+                            throw new Error(data.error || data.message || 'Error sending trade proposal');
                         } catch (e) {
                             // If not JSON, throw the text as error
                             throw new Error(text || 'Error sending trade proposal');
@@ -191,16 +191,12 @@
                 return response.json();
             })
             .then(data => {
-                if (data.success) {
-                    M.toast({ html: 'Trade proposal sent successfully' });
-                    closeTradeModal();
-                    window.location.href = '/trades';
-                } else {
-                    throw new Error(data.message || 'Error sending trade proposal');
-                }
+                // Since the trade is created successfully, we can proceed
+                M.toast({ html: 'Trade proposal sent successfully' });
+                closeTradeModal();
+                window.location.href = '/trades';
             })
             .catch(error => {
-                console.error('Error:', error);
                 M.toast({ html: error.message || 'Error sending trade proposal' });
             });
     });

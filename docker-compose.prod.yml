@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  app:
+    image: haison/barter-trading:${BUILD_NUMBER}
+    container_name: barter-trading-prod
+    ports:
+      - "3000:3000"
+      - "27017:27017"
+    volumes:
+      - ./public/uploads:/usr/src/app/public/uploads
+      - mongodb_data:/data/db
+    environment:
+      - MONGODB_URI=mongodb://localhost:27017/barter-trading
+      - SESSION_SECRET=${PROD_SESSION_SECRET}
+      - NODE_ENV=production
+    networks:
+      - barter-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  barter-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

@@ -217,55 +217,6 @@
                       </div>
                       <% } %>
           </div>
-
-          <!-- My Items Section -->
-          <h5 class="section-title">
-            <i class="material-icons">person</i>
-            My Items
-          </h5>
-          <div class="items-grid">
-            <% const myItems=items.filter(item=> item.owner._id.toString() === user._id.toString()); %>
-              <% if (myItems.length> 0) { %>
-                <% myItems.forEach(item=> { %>
-                  <div class="col s12 m6 l4">
-                    <div class="card item-card" data-item-id="<%= item._id %>" data-item-title="<%= item.title %>"
-                      data-item-description="<%= item.description %>" data-item-category="<%= item.category %>"
-                      data-item-condition="<%= item.condition %>"
-                      data-item-owner="<%= item.owner.firstName + ' ' + item.owner.lastName %>"
-                      data-item-owner-id="<%= item.owner._id %>"
-                      data-item-listed="<%= new Date(item.createdAt).toLocaleDateString() %>"
-                      data-item-images='<%= JSON.stringify(item.images) %>'>
-                      <div class="card-image">
-                        <img src="/uploads/items/<%= item.images[0] %>" alt="<%= item.title %>">
-                        <span class="card-title">
-                          <%= item.title %>
-                        </span>
-                      </div>
-                      <div class="card-content">
-                        <p>
-                          <%= item.description.substring(0, 100) %>...
-                        </p>
-                        <div class="item-meta">
-                          <p><strong>Category:</strong>
-                            <%= item.category %>
-                          </p>
-                          <p><strong>Condition:</strong>
-                            <%= item.condition %>
-                          </p>
-                          <p><strong>Listed:</strong>
-                            <%= new Date(item.createdAt).toLocaleDateString() %>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <% }); %>
-                    <% } else { %>
-                      <div class="col s12">
-                        <p class="no-items">You haven't added any items yet.</p>
-                      </div>
-                      <% } %>
-          </div>
         </div>
       </div>
     </main>
@@ -336,19 +287,6 @@
                                 <i class="material-icons left">swap_horiz</i>
                                 Propose Trade
                             </a>
-                        `;
-                  } else if (currentUserId === ownerId) {
-                    actionButtons.innerHTML = `
-                            <a href="/items/edit/${itemId}" class="btn waves-effect waves-light">
-                                <i class="material-icons left">edit</i>
-                                Edit
-                            </a>
-                            <form action="/items/${itemId}?_method=DELETE" method="POST" style="display: inline;">
-                                <button type="submit" class="btn waves-effect waves-light red">
-                                    <i class="material-icons left">delete</i>
-                                    Delete
-                                </button>
-                            </form>
                         `;
                   }
 
@@ -426,8 +364,7 @@
                   }
                   return response.json();
                 })
-                .then(items => {
-                  console.log('Fetched items:', items); // Debug log
+                .then(items => {// Debug log
                   updateItemsContainer(items);
                 })
                 .catch(error => {

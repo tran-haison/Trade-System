@@ -30,8 +30,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 // Create uploads directory if it doesn't exist
-const uploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
-require('fs').mkdirSync(uploadDir, { recursive: true });
+const profileUploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
+const itemUploadDir = path.join(__dirname, 'public', 'uploads', 'items');
+require('fs').mkdirSync(profileUploadDir, { recursive: true });
+require('fs').mkdirSync(itemUploadDir, { recursive: true });
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -103,25 +105,12 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
-// API Routes
-app.use('/api/trades', require('./routes/tradeRoutes'));
-app.use('/api/items', require('./routes/itemRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/ratings', require('./routes/ratingRoutes'));
-
-// Web Routes
+// Routes
+app.use('/', require('./routes/index'));
+app.use('/users', require('./routes/userRoutes'));
 app.use('/trades', require('./routes/tradeRoutes'));
 app.use('/items', require('./routes/itemRoutes'));
-app.use('/users', require('./routes/userRoutes'));
-app.use('/ratings', require('./routes/ratingRoutes'));
-
-// Mount index.js router for root path
-app.use('/', require('./routes/index'));
-
-// Root route
-app.get('/', (req, res) => {
-  res.render('index', { title: 'Home' });
-});
+app.use('/notifications', require('./routes/notificationRoutes'));
 
 // 404 handler
 app.use((req, res, next) => {
@@ -142,7 +131,7 @@ app.use((req, res, next) => {
 // Global error handler
 app.use(require('./middleware/errorHandler'));
 
-// Start server only if this file is run directly
+// Only start the server if this file is run directly
 if (require.main === module) {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

@@ -1,17 +1,32 @@
 const mongoose = require('mongoose');
 
 const activitySchema = new mongoose.Schema({
-    user: {
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    receiver: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     type: {
         type: String,
-        enum: ['ITEM_ADDED', 'TRADE_CREATED', 'TRADE_ACCEPTED', 'TRADE_REJECTED', 'TRADE_COMPLETED'],
-        required: true
+        required: true,
+        enum: [
+            'TRADE_CREATED',
+            'TRADE_ACCEPTED',
+            'TRADE_REJECTED',
+            'TRADE_COMPLETED',
+            'TRADE_CANCELLED',
+            'ITEM_CREATED',
+            'ITEM_UPDATED',
+            'ITEM_DELETED',
+            'MESSAGE_RECEIVED'
+        ]
     },
-    description: {
+    message: {
         type: String,
         required: true
     },
@@ -23,7 +38,7 @@ const activitySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Trade'
     },
-    timestamp: {
+    createdAt: {
         type: Date,
         default: Date.now
     }

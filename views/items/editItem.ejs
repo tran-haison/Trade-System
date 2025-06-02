@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item | Barter Trading System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .edit-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px 0 rgba(30, 41, 59, 0.06);
+            padding: 32px;
+        }
+
+        .edit-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        .edit-subtitle {
+            color: #4B5563;
+            font-size: 1rem;
+            margin-bottom: 32px;
+        }
+
+        .edit-form .image-preview {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 0;
+            align-items: center;
+        }
+
+        .edit-form .image-thumb {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .edit-form .image-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .edit-form .image-upload-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .edit-form .remove-image-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #fff;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .custom-file-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .new-image-preview {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 12px 0 20px 0;
+            align-items: center;
+        }
+
+        .new-image-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .new-image-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/navbar') %>
+        <main style="background:#f5f5f5;padding:48px 0;">
+            <div class="edit-container">
+                <h2 class="edit-title">Edit Item</h2>
+                <p class="edit-subtitle">Update your item details below and save your changes.</p>
+                <form class="edit-form" enctype="multipart/form-data" method="POST"
+                    action="/items/<%= item._id %>?_method=PUT">
+                    <!-- Current Photos & Upload -->
+                    <div class="image-upload-row">
+                        <div>
+                            <label for="images" style="font-weight:500; margin-bottom:8px; display:block;">Current
+                                Photos</label>
+                            <div class="image-preview">
+                                <% if (item.images && item.images.length> 0) { %>
+                                    <% item.images.forEach(function(img, idx) { %>
+                                        <div class="image-thumb">
+                                            <img src="/uploads/items/<%= img %>" alt="Item Image <%= idx+1 %>">
+                                            <!-- Remove button (for future AJAX removal) -->
+                                            <!-- <button type="button" class="remove-image-btn"><i class="material-icons">close</i></button> -->
+                                        </div>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <span style="color:#888;">No images uploaded.</span>
+                                                <% } %>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="images" style="font-weight:500; margin-bottom:8px; display:block;">
+                                Upload New Photos (up to 5)
+                            </label>
+                            <div class="custom-file-upload">
+                                <label for="images" class="btn">
+                                    <i class="material-icons left">cloud_upload</i>
+                                    Select Photos
+                                </label>
+                                <input type="file" id="images" name="images" accept="image/*" multiple
+                                    style="display:none;" />
+                            </div>
+                            <div style="font-size:0.95em; margin-top:8px; color:#888;">
+                                * Uploading new photos will replace existing ones
+                            </div>
+                        </div>
+                    </div>
+                    <div id="new-photo-preview" class="new-image-preview"></div>
+
+                    <!-- Item Title -->
+                    <div style="margin-bottom:20px;">
+                        <label for="title" style="font-weight:500;">Item Title*</label>
+                        <textarea id="title" name="title"
+                            style="width:100%;margin-top:6px;padding:12px 12px;border:1px solid #e5e7eb;border-radius:6px;font-size:1rem;resize:none;"
+                            required><%= item.title %></textarea>
+                    </div>
+
+                    <!-- Category -->
+                    <div style="margin-bottom:20px;">
+                        <label for="category" style="font-weight:500;">Category*</label>
+                        <select class="browser-default" id="category" name="category" required>
+                            <option value="" disabled>Select a category</option>
+                            <% ["Electronics","Furniture","Clothing","Books","Sports","Other"].forEach(cat=> { %>
+                                <option value="<%= cat %>" <%=item.category===cat ? 'selected' : '' %>><%= cat %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Condition -->
+                    <div style="margin-bottom:20px;">
+                        <label for="condition" style="font-weight:500;">Condition*</label>
+                        <select class="browser-default" id="condition" name="condition" required>
+                            <option value="" disabled>Select condition</option>
+                            <% ["New","Like New","Good","Fair","Poor"].forEach(cond=> { %>
+                                <option value="<%= cond %>" <%=item.condition===cond ? 'selected' : '' %>><%= cond %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Status -->
+                    <div style="margin-bottom:20px;">
+                        <label for="status" style="font-weight:500;">Status*</label>
+                        <select class="browser-default" id="status" name="status" required>
+                            <% ["Available","Pending","Traded"].forEach(st=> { %>
+                                <option value="<%= st %>" <%=item.status===st ? 'selected' : '' %>><%= st %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+
+                    <!-- Description -->
+                    <div style="margin-bottom:20px;">
+                        <label for="description" style="font-weight:500;">Description*</label>
+                        <textarea id="description" name="description" required
+                            style="width:100%;margin-top:6px;padding:12px 12px;border:1px solid #e5e7eb;border-radius:6px;font-size:1rem;min-height:80px;resize:vertical;"><%= item.description %></textarea>
+                    </div>
+
+                    <!-- Location -->
+                    <div style="margin-bottom:20px;">
+                        <label for="location" style="font-weight:500;">Location*</label>
+                        <textarea id="location" name="location" required
+                            style="width:100%;margin-top:6px;padding:12px 12px;border:1px solid #e5e7eb;border-radius:6px;font-size:1rem;min-height:60px;resize:vertical;"><%= item.location %></textarea>
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="display:flex;gap:12px;">
+                        <button type="submit" class="btn waves-effect waves-light">Save Changes</button>
+                        <a href="/items/manage" class="btn-flat">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <%- include('../partials/footer') %>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            <script src="/js/main.js"></script>
+            <script>
+                // Add this after your other scripts to set color of selected option
+                document.querySelectorAll('select.browser-default').forEach(function (select) {
+                    function updateColor() {
+                        if (select.value === "") {
+                            select.classList.remove('selected');
+                        } else {
+                            select.classList.add('selected');
+                        }
+                    }
+                    select.addEventListener('change', updateColor);
+                    updateColor(); // set initial color
+                });
+
+                document.getElementById('images').addEventListener('change', function () {
+                    const preview = document.getElementById('new-photo-preview');
+                    preview.innerHTML = '';
+                    const files = Array.from(this.files);
+                    files.forEach(file => {
+                        if (!file.type.startsWith('image/')) return;
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const div = document.createElement('div');
+                            div.className = 'new-image-thumb';
+                            div.innerHTML = `<img src="${e.target.result}" alt="New Photo">`;
+                            preview.appendChild(div);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+            </script>
+</body>
+
+</html>

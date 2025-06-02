@@ -1,0 +1,67 @@
+FROM jenkins/jenkins:lts
+
+USER root
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    software-properties-common \
+    unzip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Docker
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y docker-ce docker-ce-cli containerd.io \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install MongoDB tools
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg \
+    && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list \
+    && apt-get update \
+    && apt-get install -y mongodb-mongosh \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install SonarQube Scanner
+RUN wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip \
+    && unzip sonar-scanner-cli-4.8.0.2856-linux.zip \
+    && mv sonar-scanner-4.8.0.2856-linux /opt/sonar-scanner \
+    && rm sonar-scanner-cli-4.8.0.2856-linux.zip
+
+# Configure SonarQube Scanner
+ENV SONAR_RUNNER_HOME=/opt/sonar-scanner
+ENV PATH="/opt/sonar-scanner/bin:${PATH}"
+
+# Install Snyk
+RUN npm install -g snyk
+
+# Create Jenkins user groups
+RUN usermod -aG docker jenkins
+
+# Create necessary directories
+RUN mkdir -p /var/jenkins_home/.npm \
+    && mkdir -p /var/jenkins_home/.sonar \
+    && mkdir -p /var/jenkins_home/.snyk \
+    && mkdir -p /var/jenkins_home/.mongodb
+
+# Set proper permissions
+RUN chown -R jenkins:jenkins /var/jenkins_home
+
+# Switch back to jenkins user
+USER jenkins
+
+# Set environment variables
+ENV NODE_ENV=development

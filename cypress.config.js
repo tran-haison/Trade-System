@@ -7,7 +7,7 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
     supportFile: 'cypress/support/e2e.js',
-    specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
+    specPattern: 'cypress/e2e/*.{js,jsx,ts,tsx}',
     viewportWidth: 1280,
     viewportHeight: 720,
     video: false

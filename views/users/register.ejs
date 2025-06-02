@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,107 +27,139 @@
         .password-requirements li {
             transition: color 0.3s ease;
         }
+
         .password-requirements i {
             transition: color 0.3s ease;
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <%- include('../partials/navbar') %>
 
-    <!-- Flash Messages -->
-    <%- include('../partials/messages') %>
-    
-    <main style="padding: 0;">
-        <!-- Sign up Section -->
-        <section id="sign-up" style="padding: 40px 0; display: flex; justify-content: center; align-items: center;">
-            <div style="max-width: 480px; width: 100%; padding: 40px;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 8px;">Create your account</h2>
-                    <p style="color: #666; margin-bottom: 32px;">Join our barter trading community</p>
-                </div>
+        <!-- Flash Messages -->
+        <%- include('../partials/messages') %>
 
-                <form action="/users/register" method="POST" style="display: flex; flex-direction: column; gap: 24px;">
-                    <div style="display: flex; gap: 12px;">
-                        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                            <label style="display: flex; gap: 4px; font-weight: 500;">
-                                First Name
-                                <span style="color: #dc3545;">*</span>
-                            </label>
-                            <input type="text" name="firstName" placeholder="John" required
-                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+            <main style="padding: 0;">
+                <!-- Sign up Section -->
+                <section id="sign-up"
+                    style="padding: 40px 0; display: flex; justify-content: center; align-items: center;">
+                    <div style="max-width: 480px; width: 100%; padding: 40px;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 8px;">Create your account</h2>
+                            <p style="color: #666; margin-bottom: 32px;">Join our barter trading community</p>
                         </div>
-                        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                            <label style="display: flex; gap: 4px; font-weight: 500;">
-                                Last Name
-                                <span style="color: #dc3545;">*</span>
-                            </label>
-                            <input type="text" name="lastName" placeholder="Doe" required
-                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
-                        </div>
-                    </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="display: flex; gap: 4px; font-weight: 500;">
-                            Email address
-                            <span style="color: #dc3545;">*</span>
-                        </label>
-                        <input type="email" name="email" placeholder="your@email.com" required
-                            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
-                    </div>
+                        <form action="/users/register" method="POST"
+                            style="display: flex; flex-direction: column; gap: 24px;">
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                    <label style="display: flex; gap: 4px; font-weight: 500;">
+                                        First Name
+                                        <span style="color: #dc3545;">*</span>
+                                    </label>
+                                    <input type="text" name="firstName" placeholder="John" required
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                                </div>
+                                <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                                    <label style="display: flex; gap: 4px; font-weight: 500;">
+                                        Last Name
+                                        <span style="color: #dc3545;">*</span>
+                                    </label>
+                                    <input type="text" name="lastName" placeholder="Doe" required
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                                </div>
+                            </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="display: flex; gap: 4px; font-weight: 500;">
-                            Password
-                            <span style="color: #dc3545;">*</span>
-                        </label>
-                        <input type="password" name="password" placeholder="••••••••" required
-                            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
-                    </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; gap: 4px; font-weight: 500;">
+                                    Email address
+                                    <span style="color: #dc3545;">*</span>
+                                </label>
+                                <input type="email" name="email" placeholder="your@email.com" required
+                                    style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                            </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <label style="display: flex; gap: 4px; font-weight: 500;">
-                            Confirm Password
-                            <span style="color: #dc3545;">*</span>
-                        </label>
-                        <input type="password" name="confirmPassword" placeholder="••••••••" required
-                            style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
-                    </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; gap: 4px; font-weight: 500;">
+                                    Password
+                                    <span style="color: #dc3545;">*</span>
+                                </label>
+                                <div style="position: relative;">
+                                    <input type="password" name="password" id="password" placeholder="••••••••" required
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                                    <i class="material-icons"
+                                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666;"
+                                        onclick="togglePassword('password')"></i>
+                                </div>
+                            </div>
 
-                    <div style="display: flex; align-items: center; margin-top: 4px;">
-                        <input type="checkbox" name="terms" required class="custom-checkbox" />
-                        <span style="color: #666; margin-left: 8px;">
-                            I agree to the <a href="/terms" style="color: #4CAF50; text-decoration: none;">Terms of Service</a> and <a href="/privacy" style="color: #4CAF50; text-decoration: none;">Privacy Policy</a>
-                        </span>
-                    </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; gap: 4px; font-weight: 500;">
+                                    Confirm Password
+                                    <span style="color: #dc3545;">*</span>
+                                </label>
+                                <div style="position: relative;">
+                                    <input type="password" name="confirmPassword" id="confirmPassword"
+                                        placeholder="••••••••" required
+                                        style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;" />
+                                    <i class="material-icons"
+                                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666;"
+                                        onclick="togglePassword('confirmPassword')">visibility_off</i>
+                                </div>
+                            </div>
 
-                    <button type="submit" style="width: 100%; background-color: #4CAF50; color: white; padding: 12px; 
+                            <div style="display: flex; align-items: center; margin-top: 4px;">
+                                <input type="checkbox" name="terms" required class="custom-checkbox" />
+                                <span style="color: #666; margin-left: 8px;">
+                                    I agree to the <a href="/terms" style="color: #4CAF50; text-decoration: none;">Terms
+                                        of Service</a> and <a href="/privacy"
+                                        style="color: #4CAF50; text-decoration: none;">Privacy Policy</a>
+                                </span>
+                            </div>
+
+                            <button type="submit" style="width: 100%; background-color: #4CAF50; color: white; padding: 12px; 
                         border: none; border-radius: 6px; font-size: 16px; font-weight: 500; margin-top: 8px;
                         cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="material-icons" style="font-size: 20px;">person_add</i>
-                        Create Account
-                    </button>
+                                <i class="material-icons" style="font-size: 20px;">person_add</i>
+                                Create Account
+                            </button>
 
-                    <div style="text-align: center; margin-top: 16px;">
-                        <div style="color: #666; margin-bottom: 16px;">Already have an account?</div>
-                        <a href="/users/login" style="color: #4CAF50; text-decoration: none; font-weight: 500;">
-                            Sign in instead
-                        </a>
+                            <div style="text-align: center; margin-top: 16px;">
+                                <div style="color: #666; margin-bottom: 16px;">Already have an account?</div>
+                                <a href="/users/login" style="color: #4CAF50; text-decoration: none; font-weight: 500;">
+                                    Sign in instead
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-        </section>
-    </main>
+                </section>
+            </main>
 
-    <!-- Footer -->
-    <%- include('../partials/footer') %>
+            <!-- Footer -->
+            <%- include('../partials/footer') %>
 
-    <!-- Materialize JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <!-- Custom JS -->
-    <script src="/js/main.js"></script>
-    <!-- Password Validation -->
-    <script src="/js/passwordValidation.js"></script>
+                <!-- Materialize JS -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+                <!-- Custom JS -->
+                <script src="/js/main.js"></script>
+                <!-- Password Validation -->
+                <script src="/js/passwordValidation.js"></script>
+                <script>
+                    function togglePassword(inputId) {
+                        const input = document.getElementById(inputId);
+                        const icon = input.nextElementSibling;
+
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.textContent = 'visibility';
+                        } else {
+                            input.type = 'password';
+                            icon.textContent = 'visibility_off';
+                        }
+                    }
+                </script>
 </body>
-</html> 
+
+</html>

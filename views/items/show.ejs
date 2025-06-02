@@ -1,40 +1,108 @@
-<div class="card-content">
-    <span class="card-title">
-        <%= item.title %>
-    </span>
-    <p>
-        <%= item.description %>
-    </p>
-    <p><strong>Owner:</strong>
-        <%= item.owner.name %>
-    </p>
-    <p><strong>Category:</strong>
-        <%= item.category %>
-    </p>
-    <p><strong>Condition:</strong>
-        <%= item.condition %>
-    </p>
-    <p><strong>Listed:</strong>
-        <%= new Date(item.createdAt).toLocaleDateString() %>
-    </p>
-</div>
-<div class="card-action">
-    <% if (user && user._id.toString() !==item.owner._id.toString()) { %>
-        <a href="/trades/create?item=<%= item._id %>" class="btn waves-effect waves-light">
-            <i class="material-icons left">swap_horiz</i>
-            Propose Trade
-        </a>
-        <% } %>
-            <% if (user && user._id.toString()===item.owner._id.toString()) { %>
-                <a href="/items/edit/<%= item._id %>" class="btn waves-effect waves-light">
-                    <i class="material-icons left">edit</i>
-                    Edit
-                </a>
-                <form action="/items/<%= item._id %>?_method=DELETE" method="POST" style="display: inline;">
-                    <button type="submit" class="btn waves-effect waves-light red">
-                        <i class="material-icons left">delete</i>
-                        Delete
-                    </button>
-                </form>
-                <% } %>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= item.title %> | Barter Trading System
+    </title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .item-image {
+            max-height: 400px;
+            object-fit: contain;
+        }
+
+        .item-details {
+            padding: 20px;
+        }
+
+        .item-meta {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .item-meta p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/navbar') %>
+        <%- include('../partials/messages') %>
+
+            <main class="container" style="padding: 48px 0;">
+                <div class="row">
+                    <div class="col s12 m8 offset-m2">
+                        <div class="card">
+                            <div class="card-image">
+                                <img src="/uploads/items/<%= item.images[0] %>" alt="<%= item.title %>"
+                                    class="item-image">
+                            </div>
+                            <div class="card-content item-details">
+                                <span class="card-title" style="font-size: 24px; font-weight: 500;">
+                                    <%= item.title %>
+                                </span>
+                                <p class="description" style="margin: 20px 0;">
+                                    <%= item.description %>
+                                </p>
+                                <div class="item-meta">
+                                    <p><strong>Owner:</strong>
+                                        <%= item.owner.firstName %>
+                                            <%= item.owner.lastName %>
+                                    </p>
+                                    <p><strong>Category:</strong>
+                                        <%= item.category %>
+                                    </p>
+                                    <p><strong>Condition:</strong>
+                                        <%= item.condition %>
+                                    </p>
+                                    <p><strong>Listed:</strong>
+                                        <%= new Date(item.createdAt).toLocaleDateString() %>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-action">
+                                <% if (user && user._id.toString() !==item.owner._id.toString()) { %>
+                                    <a href="/trades/create?item=<%= item._id %>" class="btn waves-effect waves-light">
+                                        <i class="material-icons left">swap_horiz</i>
+                                        Propose Trade
+                                    </a>
+                                    <% } %>
+                                        <% if (user && user._id.toString()===item.owner._id.toString()) { %>
+                                            <a href="/items/edit/<%= item._id %>" class="btn waves-effect waves-light">
+                                                <i class="material-icons left">edit</i>
+                                                Edit
+                                            </a>
+                                            <form action="/items/<%= item._id %>?_method=DELETE" method="POST"
+                                                style="display: inline;">
+                                                <button type="submit" class="btn waves-effect waves-light red">
+                                                    <i class="material-icons left">delete</i>
+                                                    Delete
+                                                </button>
+                                            </form>
+                                            <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <%- include('../partials/footer') %>
+
+                <!-- Materialize JS -->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+                <!-- Custom JS -->
+                <script src="/js/main.js"></script>
+</body>
+
+</html>

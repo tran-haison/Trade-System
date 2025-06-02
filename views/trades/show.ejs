@@ -140,7 +140,8 @@
                         <div class="card-content">
                             <span class="card-title">
                                 Trade with <%= trade.initiator._id.toString()===user._id.toString() ?
-                                    trade.receiver.name : trade.initiator.name %>
+                                    `${trade.receiver.firstName} ${trade.receiver.lastName}` :
+                                    `${trade.initiator.firstName} ${trade.initiator.lastName}` %>
                             </span>
 
                             <div class="trade-status status-<%= trade.status.toLowerCase() %>">
@@ -247,6 +248,104 @@
                                                 <button type="submit" class="btn waves-effect waves-light">Send</button>
                                             </form>
                                         </div>
+
+                                        <% if (trade.status==='Completed' ) { %>
+                                            <div class="rating-section"
+                                                style="margin-top: 20px; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+                                                <h3 style="margin-bottom: 16px;">Rate Your Trading Partner</h3>
+
+                                                <% const isInitiator=trade.initiator._id.toString()===user.id %>
+                                                    <% const ratingField=isInitiator ? 'initiatorRating'
+                                                        : 'receiverRating' %>
+                                                        <% const partner=isInitiator ? trade.receiver : trade.initiator
+                                                            %>
+
+                                                            <% if (!trade[ratingField].rating) { %>
+                                                                <form action="/trades/<%= trade._id %>/rate"
+                                                                    method="POST"
+                                                                    style="display: flex; flex-direction: column; gap: 16px;">
+                                                                    <div
+                                                                        style="display: flex; flex-direction: column; gap: 8px;">
+                                                                        <label style="font-weight: 500;">Rating for <%=
+                                                                                partner.firstName %>
+                                                                                <%= partner.lastName %></label>
+                                                                        <div style="display: flex; gap: 8px;">
+                                                                            <% for(let i=1; i <=5; i++) { %>
+                                                                                <label style="cursor: pointer;">
+                                                                                    <input type="radio" name="rating"
+                                                                                        value="<%= i %>" required
+                                                                                        style="display: none;">
+                                                                                    <i class="material-icons"
+                                                                                        style="color: #ddd; font-size: 32px;">star</i>
+                                                                                </label>
+                                                                                <% } %>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div
+                                                                        style="display: flex; flex-direction: column; gap: 8px;">
+                                                                        <label style="font-weight: 500;">Comment
+                                                                            (optional)</label>
+                                                                        <textarea name="comment" rows="3"
+                                                                            style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+                                                                    </div>
+
+                                                                    <button type="submit" style="
+                                                background-color: #4CAF50;
+                                                color: white;
+                                                padding: 12px;
+                                                border: none;
+                                                border-radius: 6px;
+                                                font-size: 16px;
+                                                font-weight: 500;
+                                                cursor: pointer;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                gap: 8px;">
+                                                                        <i class="material-icons">star</i>
+                                                                        Submit Rating
+                                                                    </button>
+                                                                </form>
+                                                                <% } else { %>
+                                                                    <div style="color: #666;">
+                                                                        You have already rated this trade.
+                                                                    </div>
+                                                                    <% } %>
+
+                                                                        <% if (trade[isInitiator ? 'receiverRating'
+                                                                            : 'initiatorRating' ].rating) { %>
+                                                                            <div
+                                                                                style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                                                                                <h4 style="margin-bottom: 8px;">Rating
+                                                                                    from <%= partner.firstName %>
+                                                                                        <%= partner.lastName %>
+                                                                                </h4>
+                                                                                <div
+                                                                                    style="display: flex; gap: 4px; margin-bottom: 8px;">
+                                                                                    <% const
+                                                                                        partnerRating=trade[isInitiator
+                                                                                        ? 'receiverRating'
+                                                                                        : 'initiatorRating' ].rating %>
+                                                                                        <% for(let i=1; i <=5; i++) { %>
+                                                                                            <i class="material-icons"
+                                                                                                style="color: <%= i <= partnerRating ? '#FFD700' : '#ddd' %>; font-size: 24px;">star</i>
+                                                                                            <% } %>
+                                                                                </div>
+                                                                                <% if (trade[isInitiator
+                                                                                    ? 'receiverRating'
+                                                                                    : 'initiatorRating' ].comment) { %>
+                                                                                    <p style="color: #666;">
+                                                                                        <%= trade[isInitiator
+                                                                                            ? 'receiverRating'
+                                                                                            : 'initiatorRating'
+                                                                                            ].comment %>
+                                                                                    </p>
+                                                                                    <% } %>
+                                                                            </div>
+                                                                            <% } %>
+                                            </div>
+                                            <% } %>
                         </div>
                     </div>
                 </div>
@@ -258,6 +357,16 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         M.AutoInit();
+                    });
+
+                    // Add star rating interaction
+                    document.querySelectorAll('input[name="rating"]').forEach((radio, index) => {
+                        radio.addEventListener('change', function () {
+                            const stars = document.querySelectorAll('input[name="rating"] + i');
+                            stars.forEach((star, i) => {
+                                star.style.color = i <= index ? '#FFD700' : '#ddd';
+                            });
+                        });
                     });
                 </script>
 </body>

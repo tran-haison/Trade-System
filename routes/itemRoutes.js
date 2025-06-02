@@ -42,6 +42,9 @@ function checkFileType(file, cb) {
 // Get all items
 router.get('/', itemController.getItems);
 
+// Manage items page
+router.get('/manage', ensureAuthenticated, itemController.getManageItems);
+
 // Get available items for trade (API endpoint)
 router.get('/my/available', ensureAuthenticated, async (req, res) => {
     try {
@@ -49,7 +52,7 @@ router.get('/my/available', ensureAuthenticated, async (req, res) => {
             owner: req.user._id,
             status: 'Available'
         }).select('title description images');
-        
+
         res.json(items);
     } catch (error) {
         console.error('Error fetching available items:', error);
@@ -60,17 +63,20 @@ router.get('/my/available', ensureAuthenticated, async (req, res) => {
 // Create item
 router.post('/', ensureAuthenticated, upload.array('images', 5), async (req, res) => {
     try {
-        const item = await itemController.createItem(req, res);
-        
-        // Create activity for new item
-        await Activity.create({
-            user: req.user._id,
-            type: 'ITEM_ADDED',
-            description: `Added new item: ${item.title}`,
-            relatedItem: item._id
-        });
+        const result = await itemController.createItem(req, res);
 
-        res.redirect('/items');
+        // Only create activity if item was created successfully
+        if (result && result.data) {
+            await Activity.create({
+                user: req.user._id,
+                type: 'ITEM_ADDED',
+                description: `Added new item: ${result.data.title}`,
+                relatedItem: result.data._id
+            });
+        }
+
+        // The controller will handle the response
+        return;
     } catch (error) {
         console.error('Error creating item:', error);
         res.status(500).render('error', {
@@ -88,8 +94,10 @@ router.get('/create', (req, res) => {
     });
 });
 
-// Get single item
-router.get('/:id', itemController.getItem);
+// API: Bulk delete items
+router.post('/api/bulk-delete', ensureAuthenticated, itemController.bulkDeleteItemsApi);
+// API: Bulk update items
+router.post('/api/bulk-update', ensureAuthenticated, itemController.bulkUpdateItemsApi);
 
 // Edit item form
 router.get('/:id/edit', ensureAuthenticated, async (req, res) => {
@@ -103,7 +111,7 @@ router.get('/:id/edit', ensureAuthenticated, async (req, res) => {
             return res.status(404).render('error', { message: 'Item not found' });
         }
 
-        res.render('items/edit', {
+        res.render('items/editItem', {
             title: 'Edit Item',
             item
         });
@@ -113,33 +121,13 @@ router.get('/:id/edit', ensureAuthenticated, async (req, res) => {
     }
 });
 
+// Get single item
+router.get('/:id', itemController.getItem);
+
 // Update item
 router.put('/:id', ensureAuthenticated, upload.array('images', 5), itemController.updateItem);
 
 // Delete item
 router.delete('/:id', ensureAuthenticated, itemController.deleteItem);
-
-// Get browse items page
-router.get('/browse', async (req, res) => {
-    try {
-        const { items, currentPage, pages } = await itemService.getItemsService(req.query);
-        
-        res.render('items/browse', {
-            title: 'Browse Items',
-            items: items,
-            currentPage: currentPage,
-            pages: pages,
-            query: req.query,
-            user: req.user
-        });
-    } catch (error) {
-        console.error('Error fetching items:', error);
-        res.status(500).render('error', {
-            title: 'Error',
-            msg: 'Failed to fetch items',
-            error: error
-        });
-    }
-});
 
 module.exports = router; 

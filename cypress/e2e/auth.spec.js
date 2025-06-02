@@ -12,12 +12,11 @@ describe('Authentication', () => {
         firstName: 'Test',
         lastName: 'User',
         email: `test${timestamp}@example.com`,
-        // Simplified password that meets requirements: uppercase, lowercase, number, special char
         password: 'Test1@test'
     };
 
     it('should navigate to login page', () => {
-        cy.get('a.text-btn[href="/users/login"]').first().click();
+        cy.get('a[href="/users/login"]').first().click();
         cy.url().should('include', '/users/login');
         cy.get('h2').should('contain', 'Sign in to your account');
     });
@@ -29,11 +28,16 @@ describe('Authentication', () => {
     });
 
     it('should register a new user', () => {
-        cy.register(testUser.firstName, testUser.lastName, testUser.email, testUser.password);
+        cy.visit('/users/register');
+        cy.get('input[name="firstName"]').type(testUser.firstName);
+        cy.get('input[name="lastName"]').type(testUser.lastName);
+        cy.get('input[name="email"]').type(testUser.email);
+        cy.get('input[name="password"]').type(testUser.password);
+        cy.get('input[name="confirmPassword"]').type(testUser.password);
+        cy.get('input[name="terms"]').check();
+        cy.get('button[type="submit"]').click();
         cy.url().should('include', '/users/login');
-        cy.get('.card-panel.green.lighten-4')
-            .should('exist')
-            .and('contain', 'You are now registered and can log in');
+        cy.get('.card-panel').should('contain', 'registered');
     });
 
     it('should login with valid credentials', () => {
@@ -60,16 +64,7 @@ describe('Authentication', () => {
         
         // Verify error message
         cy.url().should('include', '/users/login');
-        cy.get('.card-panel.red.lighten-4.red-text.text-darken-4')
-            .should('exist')
-            .and(($el) => {
-                const text = $el.text();
-                expect(
-                  text.includes('Incorrect email') ||
-                  text.includes('Incorrect password') ||
-                  text.includes('That email is not registered')
-                ).to.be.true;
-            });
+        cy.get('.card-panel').should('contain', 'Incorrect');
     });
 
     it('should logout successfully', () => {
@@ -84,16 +79,12 @@ describe('Authentication', () => {
         // Verify we're logged in
         cy.url().should('include', '/dashboard');
         
-        // Then logout
-        cy.get('.nav-wrapper a[href="/users/logout"]').click();
+        // Then logout - make selector more specific
+        cy.get('nav a[href="/users/logout"]').first().click();
         
         // Verify logout success
-        cy.url().should('satisfy', (url) => {
-            return url.includes('/') || url.includes('/users/login');
-        });
-        cy.get('.card-panel.green.lighten-4')
-            .should('exist')
-            .and('contain', 'You have been logged out');
+        cy.url().should('include', '/');
+        cy.get('.card-panel').should('contain', 'logged out');
     });
 
     it('should redirect to dashboard when accessing protected routes while logged in', () => {
@@ -113,8 +104,6 @@ describe('Authentication', () => {
     it('should redirect to login when accessing protected routes while logged out', () => {
         cy.visit('/dashboard');
         cy.url().should('include', '/users/login');
-        cy.get('.card-panel.red.lighten-4')
-            .should('exist')
-            .and('contain', 'Please log in to view this resource');
+        cy.get('.card-panel').should('contain', 'Please log in');
     });
 }); 

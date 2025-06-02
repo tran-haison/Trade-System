@@ -41,6 +41,34 @@ const tradeSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    initiatorRating: {
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5
+        },
+        comment: {
+            type: String,
+            maxlength: 500
+        },
+        timestamp: {
+            type: Date
+        }
+    },
+    receiverRating: {
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5
+        },
+        comment: {
+            type: String,
+            maxlength: 500
+        },
+        timestamp: {
+            type: Date
+        }
+    },
     createdAt: {
         type: Date,
         default: Date.now

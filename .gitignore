@@ -6,6 +6,7 @@ package-lock.json
 .env
 .env.local
 .env.*.local
+.env.*
 
 # Logs
 logs
@@ -28,6 +29,8 @@ public/uploads/profiles/*
 # Testing
 coverage/
 .nyc_output/
+junit.xml
+test-report.xml
 
 # IDEs and editors
 .idea/

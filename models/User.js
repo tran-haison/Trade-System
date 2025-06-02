@@ -39,6 +39,12 @@ const UserSchema = new mongoose.Schema({
   verificationCodeExpires: {
     type: Date
   },
+  resetPasswordToken: {
+    type: String
+  },
+  resetPasswordExpires: {
+    type: Date
+  },
   profilePicture: {
     type: String,
     default: "default-profile.png"
@@ -74,7 +80,7 @@ const UserSchema = new mongoose.Schema({
       message: 'Please enter a valid URL'
     }
   },
-  rating: {
+  averageRating: {
     type: Number,
     default: 0,
     min: 0,
@@ -84,10 +90,6 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
-  },
-  averageRating: {
-    type: Number,
-    default: 0
   },
   createdAt: {
     type: Date,
@@ -106,48 +108,31 @@ UserSchema.pre('save', function(next) {
   next();
 });
 
-// Also update updatedAt on findOneAndUpdate
-UserSchema.pre('findOneAndUpdate', function(next) {
-  this.set({ updatedAt: new Date() });
-  next();
-});
-
 // Hash password before saving
 UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-
+  if (!this.isModified('password')) {
+    return next();
+  }
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Also hash password on findOneAndUpdate if password is being modified
-UserSchema.pre('findOneAndUpdate', async function(next) {
-  const update = this.getUpdate();
-  if (update.password) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      update.password = await bcrypt.hash(update.password, salt);
-      next();
-    } catch (error) {
-      next(error);
-    }
-  } else {
-    next();
+  } catch (err) {
+    next(err);
   }
 });
 
 // Method to compare password
 UserSchema.methods.comparePassword = async function(candidatePassword) {
-  try {
-    return await bcrypt.compare(candidatePassword, this.password);
-  } catch (error) {
-    throw error;
-  }
+    try {
+        if (!candidatePassword || !this.password) {
+            return false;
+        }
+        return await bcrypt.compare(candidatePassword, this.password);
+    } catch (err) {
+        console.error('Error comparing passwords:', err);
+        return false;
+    }
 };
 
 module.exports = mongoose.model("User", UserSchema);

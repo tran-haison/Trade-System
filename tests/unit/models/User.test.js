@@ -1,22 +1,25 @@
 const mongoose = require('mongoose');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const bcrypt = require('bcryptjs');
 const User = require('../../../models/User');
+const Item = require('../../../models/Item');
 
 describe('User Model Test', () => {
     beforeAll(async () => {
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/barter-trading-test', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        mongoServer = await MongoMemoryServer.create();
+        if (mongoose.connection.readyState !== 0) {
+            await mongoose.disconnect();
+        }
+        await mongoose.connect(mongoServer.getUri());
     });
 
     afterAll(async () => {
-        await mongoose.connection.dropDatabase();
-        await mongoose.connection.close();
+        await mongoose.disconnect();
+        await mongoServer.stop();
     });
 
-    beforeEach(async () => {
-        await User.deleteMany({}); // Clear users before each test
+    afterEach(async () => {
+        await Item.deleteMany();
     });
 
     it('should create & save user successfully', async () => {
@@ -32,7 +35,7 @@ describe('User Model Test', () => {
         expect(savedUser.firstName).toBe(validUser.firstName);
         expect(savedUser.lastName).toBe(validUser.lastName);
         expect(savedUser.email).toBe(validUser.email);
-        
+
         // Verify password is hashed and can be compared
         const isMatch = await bcrypt.compare('password123', savedUser.password);
         expect(isMatch).toBe(true);

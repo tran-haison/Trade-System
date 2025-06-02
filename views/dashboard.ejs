@@ -25,95 +25,134 @@
             </div>
         </div>
 
-        <div class="row">
-            <!-- Quick Actions -->
-            <div class="col s12 m6">
-                <div class="card">
-                    <div class="card-content">
-                        <span class="card-title">Quick Actions</span>
-                        <div class="collection">
-                            <a href="/items/create" class="collection-item">
-                                <i class="material-icons left">add</i>
-                                List New Item
-                            </a>
-                            <a href="/items" class="collection-item">
-                                <i class="material-icons left">list</i>
-                                Browse Items
-                            </a>
-                            <a href="/trades" class="collection-item">
-                                <i class="material-icons left">swap_horiz</i>
-                                My Trades
-                            </a>
-                            <a href="/trades/chat" class="collection-item">
-                                <i class="material-icons left">chat</i>
-                                My Messages
-                            </a>
-                            <a href="/users/profile" class="collection-item">
-                                <i class="material-icons left">person</i>
-                                My Profile
-                            </a>
+                <div class="row">
+                    <!-- Quick Actions -->
+                    <div class="col s12 m6">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="card-title">Quick Actions</span>
+                                <div class="collection">
+                                    <a href="/items/create" class="collection-item">
+                                        <i class="material-icons left">add</i>
+                                        List New Item
+                                    </a>
+                                    <a href="/items" class="collection-item">
+                                        <i class="material-icons left">list</i>
+                                        Browse Items
+                                    </a>
+                                    <a href="/items/manage" class="collection-item">
+                                        <i class="material-icons left">inventory_2</i>
+                                        Manage Items
+                                    </a>
+                                    <a href="/trades" class="collection-item">
+                                        <i class="material-icons left">swap_horiz</i>
+                                        My Trades
+                                    </a>
+                                    <a href="/users/profile" class="collection-item">
+                                        <i class="material-icons left">person</i>
+                                        My Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="col s12 m6">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="card-title">Recent Activity</span>
+                                <ul class="collection">
+                                    <% if (recentActivity && recentActivity.length> 0) { %>
+                                        <% recentActivity.forEach(activity=> { %>
+                                            <li class="collection-item">
+                                                <div class="activity-item">
+                                                    <i class="material-icons left">
+                                                        <% if (activity.type==='TRADE_CREATED' ) { %>
+                                                            swap_horiz
+                                                            <% } else if (activity.type==='TRADE_ACCEPTED' ) { %>
+                                                                check_circle
+                                                                <% } else if (activity.type==='TRADE_REJECTED' ) { %>
+                                                                    cancel
+                                                                    <% } else if (activity.type==='TRADE_COMPLETED' ) {
+                                                                        %>
+                                                                        done_all
+                                                                        <% } else if (activity.type==='TRADE_CANCELLED'
+                                                                            ) { %>
+                                                                            block
+                                                                            <% } else if (activity.type==='ITEM_CREATED'
+                                                                                ) { %>
+                                                                                add_circle
+                                                                                <% } else if
+                                                                                    (activity.type==='ITEM_UPDATED' ) {
+                                                                                    %>
+                                                                                    edit
+                                                                                    <% } else if
+                                                                                        (activity.type==='ITEM_DELETED'
+                                                                                        ) { %>
+                                                                                        delete
+                                                                                        <% } else if
+                                                                                            (activity.type==='MESSAGE_RECEIVED'
+                                                                                            ) { %>
+                                                                                            mail
+                                                                                            <% } %>
+                                                    </i>
+                                                    <div class="activity-content">
+                                                        <div class="activity-message">
+                                                            <%= activity.message || 'Activity occurred' %>
+                                                        </div>
+                                                        <div class="activity-time grey-text">
+                                                            <%= new Date(activity.createdAt).toLocaleString() %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <li class="collection-item">No recent activity to show.</li>
+                                                    <% } %>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Activity -->
-            <div class="col s12 m6">
-                <div class="card">
-                    <div class="card-content">
-                        <span class="card-title">Recent Activity</span>
-                        <ul class="collection">
-                            <% if (recentActivity && recentActivity.length > 0) { %>
-                                <% recentActivity.forEach(activity => { %>
-                                    <li class="collection-item">
-                                        <div class="activity-item">
-                                            <i class="material-icons left">
-                                                <% if (activity.type === 'ITEM_ADDED') { %>
-                                                    add_circle
-                                                <% } else if (activity.type === 'TRADE_CREATED') { %>
-                                                    swap_horiz
-                                                <% } else if (activity.type === 'TRADE_ACCEPTED') { %>
-                                                    check_circle
-                                                <% } else if (activity.type === 'TRADE_REJECTED') { %>
-                                                    cancel
-                                                <% } else if (activity.type === 'TRADE_COMPLETED') { %>
-                                                    done_all
-                                                <% } %>
-                                            </i>
-                                            <span class="activity-description">
-                                                <%= activity.description %>
-                                            </span>
-                                            <span class="secondary-content grey-text">
-                                                <%= new Date(activity.timestamp).toLocaleDateString() %>
-                                            </span>
-                                        </div>
-                                    </li>
-                                <% }); %>
-                            <% } else { %>
-                                <li class="collection-item">No recent activity to show.</li>
-                            <% } %>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            <style>
+                .activity-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
 
-    <style>
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+                .activity-content {
+                    flex-grow: 1;
+                    margin-left: 10px;
+                }
 
-        .activity-description {
-            flex-grow: 1;
-        }
+                .activity-message {
+                    margin-bottom: 4px;
+                    font-size: 1rem;
+                    line-height: 1.4;
+                }
 
-        .material-icons {
-            color: #666;
-        }
-    </style>
+                .activity-time {
+                    font-size: 0.8rem;
+                }
+
+                .material-icons {
+                    color: #666;
+                }
+
+                .collection-item {
+                    color: #333 !important;
+                    padding: 10px 20px !important;
+                }
+
+                .material-icons.left {
+                    margin-right: 10px;
+                }
+            </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

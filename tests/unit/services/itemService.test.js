@@ -1,25 +1,21 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const Item = require('../../../models/Item');
 const itemService = require('../../../services/itemService');
 require('../../../models/User');
 
 describe('itemService', () => {
-    let mongoServer;
     let userId;
 
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
         if (mongoose.connection.readyState !== 0) {
             await mongoose.disconnect();
         }
-        await mongoose.connect(mongoServer.getUri(), { useNewUrlParser: true, useUnifiedTopology: true });
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/barter-trading');
         userId = new mongoose.Types.ObjectId();
     });
 
     afterAll(async () => {
         await mongoose.disconnect();
-        await mongoServer.stop();
     });
 
     afterEach(async () => {

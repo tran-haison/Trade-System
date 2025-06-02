@@ -9,12 +9,9 @@ describe('Trade Model Test', () => {
     beforeAll(async () => {
         // Disconnect any existing connections
         await mongoose.disconnect();
-        
+
         // Connect to test database
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/trade_system_test', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/barter-trading');
     }, 10000); // Increase timeout to 10 seconds
 
     afterAll(async () => {
@@ -164,7 +161,7 @@ describe('Trade Model Test', () => {
 
             await trade.addMessage(receiver._id, 'New message');
             const updatedTrade = await Trade.findById(trade._id);
-            
+
             expect(updatedTrade.messages).toHaveLength(2);
             expect(updatedTrade.messages[1].content).toBe('New message');
             expect(updatedTrade.messages[1].sender.toString()).toBe(receiver._id.toString());

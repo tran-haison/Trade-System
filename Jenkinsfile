@@ -66,7 +66,7 @@ pipeline {
                     sh 'npm run dev &'
                     
                     // Wait for the server to be ready
-                    sh 'sleep 30'
+                    sh 'sleep 15'
                     
                     try {
                         parallel {
@@ -75,13 +75,11 @@ pipeline {
                                     sh 'npm run test:unit'
                                 }
                             }
-                            
                             stage('Integration Tests') {
                                 steps {
                                     sh 'npm run test:integration'
                                 }
                             }
-                            
                             stage('E2E Tests') {
                                 steps {
                                     sh 'npm run test:e2e'
@@ -90,7 +88,7 @@ pipeline {
                         }
                     } finally {
                         // Kill the development server
-                        // sh 'pkill -f "node.*dev" || true'
+                        sh 'pkill -f "node.*dev" || true'
                     }
                 }
             }
@@ -121,43 +119,43 @@ pipeline {
             }
         }
         
-        // stage('Deploy to Staging') {
-        //     steps {
-        //         script {
-        //             // Deploy to staging environment
-        //             sh '''
-        //                 docker-compose -f docker-compose.staging.yml down
-        //                 docker-compose -f docker-compose.staging.yml up -d
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Deploy to Staging') {
+            steps {
+                script {
+                    // Deploy to staging environment
+                    sh '''
+                        docker-compose -f docker-compose.staging.yml down
+                        docker-compose -f docker-compose.staging.yml up -d
+                    '''
+                }
+            }
+        }
         
-        // stage('Release to Production') {
-        //     when {
-        //         branch 'main'
-        //     }
-        //     steps {
-        //         script {
-        //             // Deploy to production
-        //             sh '''
-        //                 docker-compose -f docker-compose.prod.yml down
-        //                 docker-compose -f docker-compose.prod.yml up -d
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Release to Production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    // Deploy to production
+                    sh '''
+                        docker-compose -f docker-compose.prod.yml down
+                        docker-compose -f docker-compose.prod.yml up -d
+                    '''
+                }
+            }
+        }
         
-        // stage('Monitoring') {
-        //     steps {
-        //         script {
-        //             // Set up New Relic monitoring
-        //             sh '''
-        //                 newrelic-admin run-program npm start
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Monitoring') {
+            steps {
+                script {
+                    // Set up New Relic monitoring
+                    sh '''
+                        newrelic-admin run-program npm start
+                    '''
+                }
+            }
+        }
     }
     
     post {

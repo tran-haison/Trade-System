@@ -54,7 +54,7 @@ pipeline {
                         docker run -d --name mongodb \
                             -p 27017:27017 \
                             -v mongodb_data:/data/db \
-                            mongo:latest
+                            mongo:8.0.6
                         
                         # Wait for MongoDB to be ready
                         echo "Waiting for MongoDB to start..."

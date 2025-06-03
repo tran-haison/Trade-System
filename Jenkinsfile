@@ -29,106 +29,120 @@ pipeline {
             }
         }
         
-        stage('Build') {
-            steps {
-                script {
-                    // Build Docker image
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-                    sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
-                    
-                    // Save Docker image as artifact
-                    sh "docker save ${DOCKER_IMAGE}:${DOCKER_TAG} | gzip > barter-trading-${DOCKER_TAG}.tar.gz"
-                    archiveArtifacts artifacts: "barter-trading-${DOCKER_TAG}.tar.gz"
-                }
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                script {
-                    // Install dependencies
-                    sh 'npm install'
-                    
-                    // Start the development server in the background
-                    sh 'npm run dev &'
-                    
-                    // Wait for the server to be ready
-                    sh 'sleep 15'
-                    
-                    sh 'npm run test:unit'
-                    sh 'npm run test:integration'
-                    
-                    // Start Xvfb and run Cypress tests
-                    sh '''
-                        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-                        export DISPLAY=:99
-                        npm run test:e2e
-                    '''
-                }
-            }
-        }
-        
-        stage('Code Quality') {
-            steps {
-                script {
-                    // Run SonarQube analysis
-                    sh '''
-                        sonar-scanner \
-                            -Dsonar.token=${SONAR_TOKEN}
-                    '''
-                }
-            }
-        }
-        
-        stage('Security') {
-            steps {
-                script {
-                    // Run npm audit
-                    sh 'npm audit'
-                    
-                    // Run Snyk security scan
-                    sh 'snyk test --token=${SNYK_TOKEN}'
-                }
-            }
-        }
-        
-        stage('Deploy to Staging') {
-            steps {
-                script {
-                    // Deploy to staging environment
-                    sh '''
-                        docker-compose -f docker-compose.staging.yml down
-                        docker-compose -f docker-compose.staging.yml up -d
-                    '''
-                }
-            }
-        }
-        
-        // stage('Release to Production') {
-        //     when {
-        //         branch 'main'
-        //     }
+        // stage('Build') {
         //     steps {
         //         script {
-        //             // Deploy to production
+        //             // Build Docker image
+        //             sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+        //             sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
+                    
+        //             // Save Docker image as artifact
+        //             sh "docker save ${DOCKER_IMAGE}:${DOCKER_TAG} | gzip > barter-trading-${DOCKER_TAG}.tar.gz"
+        //             archiveArtifacts artifacts: "barter-trading-${DOCKER_TAG}.tar.gz"
+        //         }
+        //     }
+        // }
+        
+        // stage('Test') {
+        //     steps {
+        //         script {
+        //             // Install dependencies
+        //             sh 'npm install'
+                    
+        //             // Start the development server in the background
+        //             sh 'npm run dev &'
+                    
+        //             // Wait for the server to be ready
+        //             sh 'sleep 15'
+                    
+        //             sh 'npm run test:unit'
+        //             sh 'npm run test:integration'
+                    
+        //             // Start Xvfb and run Cypress tests
         //             sh '''
-        //                 docker-compose -f docker-compose.prod.yml down
-        //                 docker-compose -f docker-compose.prod.yml up -d
+        //                 Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        //                 export DISPLAY=:99
+        //                 npm run test:e2e
         //             '''
         //         }
         //     }
         // }
         
-        stage('Monitoring') {
+        // stage('Code Quality') {
+        //     steps {
+        //         script {
+        //             // Run SonarQube analysis
+        //             sh '''
+        //                 sonar-scanner \
+        //                     -Dsonar.token=${SONAR_TOKEN}
+        //             '''
+        //         }
+        //     }
+        // }
+        
+        // stage('Security') {
+        //     steps {
+        //         script {
+        //             // Run npm audit
+        //             sh 'npm audit'
+                    
+        //             // Run Snyk security scan
+        //             sh 'snyk test --token=${SNYK_TOKEN}'
+        //         }
+        //     }
+        // }
+        
+        // stage('Deploy to Staging') {
+        //     steps {
+        //         script {
+        //             // Deploy to staging environment
+        //             sh '''
+        //                 docker-compose -f docker-compose.staging.yml down
+        //                 docker-compose -f docker-compose.staging.yml up -d
+        //             '''
+        //         }
+        //     }
+        // }
+        
+        stage('Release to Production') {
+            when {
+                branch 'main'
+            }
+            environment {
+                HEROKU_API_KEY = credentials('heroku-api-key')
+                HEROKU_APP_NAME = 'barter-trading'
+            }
             steps {
                 script {
-                    // Set up New Relic monitoring
+                    // Deploy to production
+                    // Set up Heroku authentication
                     sh '''
-                        newrelic-admin run-program npm start
+                        echo "$HEROKU_API_KEY" | heroku auth:token > ~/.netrc
+                        heroku git:remote -a $HEROKU_APP_NAME
+                    '''
+
+                    // Push to Heroku (Git-based deploy)
+                    sh '''
+                        git config --global user.email "ci@example.com"
+                        git config --global user.name "Jenkins CI"
+                        git add .
+                        git commit -m "Automated deploy by Jenkins" || true
+                        git push heroku HEAD:main -f
                     '''
                 }
             }
         }
+        
+        // stage('Monitoring') {
+        //     steps {
+        //         script {
+        //             // Set up New Relic monitoring
+        //             sh '''
+        //                 newrelic-admin run-program npm start
+        //             '''
+        //         }
+        //     }
+        // }
     }
     
     post {

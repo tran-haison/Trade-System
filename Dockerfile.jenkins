@@ -23,7 +23,11 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     libxtst6 \
     xauth \
+    git \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Heroku CLI
+RUN curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
 
 # Install Docker
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \

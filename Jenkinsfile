@@ -122,7 +122,7 @@ pipeline {
                         git config --global user.name "Jenkins CI"
                         git add .
                         git commit -m "Automated deploy by Jenkins" || true
-                        git push heroku develop:main -f
+                        git push heroku HEAD:main -f
                     '''
                 }
             }

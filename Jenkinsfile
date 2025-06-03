@@ -68,6 +68,9 @@ pipeline {
                         export DISPLAY=:99
                         npm run test:e2e
                     '''
+
+                    // Stop the development server
+                    sh 'pkill -f "npm run dev"'
                 }
             }
         }
@@ -137,7 +140,11 @@ pipeline {
                         NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY} NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME} npm start
                     '''
 
+                    // Print New Relic logs
                     sh 'cat newrelic_agent.log'
+
+                    // Stop the development server
+                    sh 'pkill -f "npm start"'
                 }
             }
         }

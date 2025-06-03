@@ -10,6 +10,8 @@ pipeline {
         NEW_RELIC_APP_NAME = 'barter-trading'        
         SESSION_SECRET = credentials('session-secret')
         SNYK_TOKEN = credentials('snyk-token')
+        HEROKU_API_KEY = credentials('heroku-api-key')
+        HEROKU_APP_NAME = 'barter-trading'
     }
     
     stages {
@@ -105,13 +107,6 @@ pipeline {
         // }
         
         stage('Release to Production') {
-            when {
-                branch 'develop'
-            }
-            environment {
-                HEROKU_API_KEY = credentials('heroku-api-key')
-                HEROKU_APP_NAME = 'barter-trading'
-            }
             steps {
                 script {
                     // Deploy to production
@@ -127,7 +122,7 @@ pipeline {
                         git config --global user.name "Jenkins CI"
                         git add .
                         git commit -m "Automated deploy by Jenkins" || true
-                        git push heroku HEAD:main -f
+                        git push heroku develop:main -f
                     '''
                 }
             }

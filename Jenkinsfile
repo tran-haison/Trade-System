@@ -112,7 +112,12 @@ pipeline {
                     // Deploy to production
                     // Set up Heroku authentication
                     sh '''
-                        echo "$HEROKU_API_KEY" | heroku auth:token > ~/.netrc
+                        cat > ~/.netrc <<EOF
+                        machine git.heroku.com
+                        login $HEROKU_API_KEY
+                        password $HEROKU_API_KEY
+                        EOF
+                        
                         heroku git:remote -a $HEROKU_APP_NAME
                     '''
 
@@ -120,8 +125,6 @@ pipeline {
                     sh '''
                         git config --global user.email "ci@example.com"
                         git config --global user.name "Jenkins CI"
-                        git add .
-                        git commit -m "Automated deploy by Jenkins" || true
                         git push heroku HEAD:main -f
                     '''
                 }

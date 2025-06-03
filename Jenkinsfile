@@ -136,7 +136,7 @@ pipeline {
                 script {
                     // Set up New Relic monitoring
                     sh '''
-                        NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY} NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME} npm start
+                        NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY} NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME} PORT=4000 npm start
                     '''
 
                     // Print New Relic logs

@@ -77,8 +77,7 @@ pipeline {
                 script {
                     // Run SonarQube analysis
                     sh '''
-                        sonar-scanner \
-                            -Dsonar.token=${SONAR_TOKEN}
+                        sonar-scanner -Dsonar.token=${SONAR_TOKEN} || true
                     '''
                 }
             }

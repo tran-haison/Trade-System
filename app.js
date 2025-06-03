@@ -11,10 +11,6 @@ const connectDB = require('./config/db');
 const methodOverride = require('method-override');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/User');
-const Item = require('./models/Item');
-const Trade = require('./models/Trade');
-const Activity = require('./models/Activity');
-const Rating = require('./models/Rating');
 
 // Initialize express app
 const app = express();

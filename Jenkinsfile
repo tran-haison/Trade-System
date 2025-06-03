@@ -8,6 +8,7 @@ pipeline {
         EMAIL_RECIPIENTS = 'dev.sonth2501@gmail.com'
         SESSION_SECRET = credentials('session-secret')
         SNYK_TOKEN = credentials('snyk-token')
+        NEW_RELIC_APP_NAME = 'barter-trading'
         NEW_RELIC_LICENSE_KEY = credentials('newrelic-license-key')
         HEROKU_API_KEY = credentials('heroku-api-key')
         HEROKU_APP_NAME = 'barter-trading'
@@ -25,6 +26,7 @@ pipeline {
                         SESSION_SECRET=${SESSION_SECRET}
                         NODE_ENV=development
                         NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+                        NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME}
                         EOL
                     '''
                 }
@@ -133,7 +135,7 @@ pipeline {
                 script {
                     // Set up New Relic monitoring
                     sh '''
-                        NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY} npm start
+                        NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY} NEW_RELIC_APP_NAME=${NEW_RELIC_APP_NAME} npm start
                     '''
 
                     sh 'cat newrelic_agent.log'

@@ -9,15 +9,15 @@ services:
     environment:
       - NODE_ENV=staging
       - MONGODB_URI=mongodb://mongodb:27018/barter_trading_staging
-      - PORT=3000
+      - PORT=3001
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       - mongodb
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3

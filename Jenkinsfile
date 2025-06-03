@@ -103,8 +103,7 @@ pipeline {
                 script {
                     // Deploy to staging environment
                     sh '''
-                        docker-compose -f docker-compose.staging.yml down
-                        docker-compose -f docker-compose.staging.yml up -d
+                        docker-compose -f docker-compose.staging.yml build --no-cache
                     '''
                 }
             }

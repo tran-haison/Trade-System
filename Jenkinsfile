@@ -59,8 +59,8 @@ pipeline {
                     // Wait for the server to be ready
                     sh 'sleep 10'
                     
-                    sh 'npm run test:unit'
-                    sh 'npm run test:integration'
+                    // Run unit and integration tests with coverage
+                    sh 'npm run test:coverage'
                     
                     // Start Xvfb and run Cypress tests
                     sh '''

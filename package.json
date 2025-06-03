@@ -13,8 +13,8 @@
     "cypress:open": "cypress open",
     "lint": "eslint .",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:report": "jest --testResultsProcessor=jest-junit"
+    "test:coverage": "jest --coverage --runInBand",
+    "test:report": "jest --testResultsProcessor=jest-junit --runInBand"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

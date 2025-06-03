@@ -4,7 +4,6 @@ const itemRoutes = require('../../routes/itemRoutes');
 const Item = require('../../models/Item');
 const User = require('../../models/User');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const userId = '507f1f77bcf86cd799439011'; // Use a fixed ObjectId string
 let app, mongoServer, agent;
 
@@ -18,11 +17,10 @@ jest.mock('../../middleware/auth', () => ({
 
 describe('Item API', () => {
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
         if (mongoose.connection.readyState !== 0) {
             await mongoose.disconnect();
         }
-        await mongoose.connect(mongoServer.getUri());
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/barter-trading');
         app = express();
         app.use(express.json());
         app.use(express.urlencoded({ extended: false }));
@@ -45,7 +43,6 @@ describe('Item API', () => {
 
     afterAll(async () => {
         await mongoose.disconnect();
-        await mongoServer.stop();
     });
 
     afterEach(async () => {

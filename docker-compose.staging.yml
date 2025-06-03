@@ -8,16 +8,14 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=staging
-      - MONGODB_URI=mongodb://mongodb:27017/barter_trading_staging
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=24h
+      - MONGODB_URI=mongodb://mongodb:27018/barter_trading_staging
       - PORT=3000
     ports:
       - "3000:3000"
     depends_on:
       - mongodb
     networks:
-      - barter-network
+      - app-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
@@ -34,18 +32,19 @@ services:
     volumes:
       - mongodb_staging_data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
-      - barter-network
+      - app-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27018/test --quiet
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
 networks:
-  barter-network:
+  app-network:
+    name: barter-trading-staging-network
     driver: bridge
 
 volumes:

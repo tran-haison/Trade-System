@@ -1,21 +1,18 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const bcrypt = require('bcryptjs');
 const User = require('../../../models/User');
 const Item = require('../../../models/Item');
 
 describe('User Model Test', () => {
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
         if (mongoose.connection.readyState !== 0) {
             await mongoose.disconnect();
         }
-        await mongoose.connect(mongoServer.getUri());
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/barter-trading');
     });
 
     afterAll(async () => {
         await mongoose.disconnect();
-        await mongoServer.stop();
     });
 
     afterEach(async () => {

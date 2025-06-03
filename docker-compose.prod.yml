@@ -11,7 +11,7 @@ services:
       - ./public/uploads:/usr/src/app/public/uploads
       - mongodb_data:/data/db
     environment:
-      - MONGODB_URI=mongodb://localhost:27017/barter-trading
+      - MONGODB_URI=mongodb://mongodb:27017/barter-trading
       - SESSION_SECRET=${PROD_SESSION_SECRET}
       - NODE_ENV=production
     networks:
@@ -23,9 +23,27 @@ services:
       timeout: 10s
       retries: 3
 
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=barter-trading
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - barter-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 networks:
   barter-network:
     driver: bridge
 
 volumes:
   mongodb_data:
+    name: barter-trading-mongodb-prod-data

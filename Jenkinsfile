@@ -110,21 +110,17 @@ pipeline {
             steps {
                 script {
                     // Deploy to production
-                    // Set up Heroku authentication
                     sh '''
                         cat > ~/.netrc <<EOF
                         machine git.heroku.com
                         login $HEROKU_API_KEY
                         password $HEROKU_API_KEY
                         EOF
-                        
-                        heroku git:remote -a $HEROKU_APP_NAME
-                    '''
 
-                    // Push to Heroku (Git-based deploy)
-                    sh '''
-                        git config --global user.email "ci@example.com"
-                        git config --global user.name "Jenkins CI"
+                        heroku git:remote -a $HEROKU_APP_NAME
+                        
+                        git config --global user.email "dev.sonth2501@gmail.com"
+                        git config --global user.name "Hai Son Tran"
                         git push heroku HEAD:main -f
                     '''
                 }

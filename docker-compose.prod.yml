@@ -2,48 +2,23 @@ version: "3.8"
 
 services:
   app:
-    image: haison/barter-trading:${BUILD_NUMBER}
+    build: 
+      context: .
+      dockerfile: Dockerfile.prod
     container_name: barter-trading-prod
     ports:
       - "3000:3000"
-      - "27017:27017"
     volumes:
       - ./public/uploads:/usr/src/app/public/uploads
-      - mongodb_data:/data/db
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/barter-trading
-      - SESSION_SECRET=${PROD_SESSION_SECRET}
+      - MONGODB_URI=mongodb://localhost:27017/barter-trading
+      - SESSION_SECRET=barter-trading-secret-key-2025
       - NODE_ENV=production
+      - PORT=3000
     networks:
       - barter-network
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    restart: always
-    environment:
-      - MONGO_INITDB_DATABASE=barter-trading
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - barter-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+    restart: unless-stopped
 
 networks:
   barter-network:
     driver: bridge
-
-volumes:
-  mongodb_data:
-    name: barter-trading-mongodb-prod-data

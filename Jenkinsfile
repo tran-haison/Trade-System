@@ -106,7 +106,7 @@ pipeline {
         
         stage('Release to Production') {
             when {
-                branch 'main'
+                branch 'develop'
             }
             environment {
                 HEROKU_API_KEY = credentials('heroku-api-key')
